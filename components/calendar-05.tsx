@@ -36,7 +36,8 @@ export function Calendar16() {
               id="time-from"
               type="time"
               step="1"
-              defaultValue="10:30:00"
+              defaultValue="10:30"
+              max={60}
               className="appearance-none pl-8 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
             />
           </div>

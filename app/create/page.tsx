@@ -17,7 +17,7 @@ const CreateInvitationPage = () => {
     settings: {
       anonymousResponse: false,
       hideParticipants: false,
-      allowComments: true,
+      allowComments: false,
       deadline: undefined,
     },
   })

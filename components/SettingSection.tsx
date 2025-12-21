@@ -1,5 +1,6 @@
 import type { InvitationDraft } from "@/app/types/type"
-import ToggleRow from "./ToggleRow"
+import { Switch } from "./ui/switch"
+import { Label } from "./ui/label"
 
 type SettingSectionProps = {
   settings: InvitationDraft["settings"]
@@ -17,26 +18,42 @@ const SettingSection = ({ settings, onChange }: SettingSectionProps) => {
       </label>
 
       <div className="p-4 rounded-xl bg-card border border-border space-y-4">
+
         {/* 匿名回答 */}
-        <ToggleRow
-          label="匿名で回答を許可"
-          checked={settings.anonymousResponse}
-          onToggle={(v) => onChange("anonymousResponse", v)}
-        />
+        <div className="flex items-center justify-between">
+          <Label htmlFor="anonymous" className="text-sm font-medium">
+            匿名で回答を許可
+          </Label>
+          <Switch
+            id="anonymous"
+            checked={settings.anonymousResponse}
+            onCheckedChange={(v) => onChange("anonymousResponse", v)}
+          />
+        </div>
 
         {/* 参加者非表示 */}
-        <ToggleRow
-          label="参加者を非表示"
-          checked={settings.hideParticipants}
-          onToggle={(v) => onChange("hideParticipants", v)}
-        />
+        <div className="flex items-center justify-between">
+          <Label htmlFor="hide-participants" className="text-sm font-medium">
+            参加者を非表示
+          </Label>
+          <Switch
+            id="hide-participants"
+            checked={settings.hideParticipants}
+            onCheckedChange={(v) => onChange("hideParticipants", v)}
+          />
+        </div>
 
         {/* コメント許可 */}
-        <ToggleRow
-          label="コメントを許可"
-          checked={settings.allowComments}
-          onToggle={(v) => onChange("allowComments", v)}
-        />
+        <div className="flex items-center justify-between">
+          <Label htmlFor="allow-comments" className="text-sm font-medium">
+            コメントを許可
+          </Label>
+          <Switch
+            id="allow-comments"
+            checked={settings.allowComments}
+            onCheckedChange={(v) => onChange("allowComments", v)}
+          />
+        </div>
 
         {/* 締切 */}
         <div className="space-y-1">

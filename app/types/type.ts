@@ -26,3 +26,10 @@ export type DateCandidate = {
   endTime?: string
   comment?: string
 }
+
+export type Participant = {
+  id: string
+  name: string
+  avatar?: string
+  role: "organizer" | "member"
+}

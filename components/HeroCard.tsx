@@ -145,22 +145,6 @@ export default function InvitationHeroCard({
           <p className="text-sm text-muted-foreground leading-relaxed font-medium whitespace-pre-line">
             {draft.description}
           </p>
-
-          {draft.locationUrl && (
-            <a
-              href={draft.locationUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 text-xs font-bold text-muted-foreground hover:text-primary transition-colors"
-            >
-              <span className="w-6 h-6 rounded-full bg-muted flex items-center justify-center">
-                📍
-              </span>
-              <span className="underline underline-offset-2">
-                場所を見る
-              </span>
-            </a>
-          )}
         </div>
       </div>
     </Card>

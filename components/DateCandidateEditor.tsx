@@ -3,7 +3,7 @@
 import { DateCandidate } from "@/app/types/type"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { ChevronDown, ChevronLeft, ChevronUp } from "lucide-react"
+import { ChevronDown } from "lucide-react"
 import { useState } from "react"
 
 type Props = {

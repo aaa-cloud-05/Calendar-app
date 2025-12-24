@@ -13,7 +13,9 @@ const CreateInvitationPage = () => {
   const [draft, setDraft] = useState<InvitationDraft>({
     title: "",
     description: "",
-    locationUrl: "",
+    location: "",
+    startTime: "",
+    endTime: "",
     tags: [],
     dateCandidates: [],
     settings: {

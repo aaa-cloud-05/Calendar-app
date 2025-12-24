@@ -1,7 +1,10 @@
 export type InvitationDraft = {
   title: string
   description?: string
-  locationUrl?: string
+  location?: string
+  budget?: number
+  startTime?: string
+  endTime?: string
 
   tags: Tag[]
 
@@ -21,7 +24,8 @@ export type Tag = {
 }
 
 export type DateCandidate = {
-  date: Date        // "2025-10-05"
+  id: string
+  date: Date       // "2025-10-05"
   startTime?: string  // "18:00"
   endTime?: string
   comment?: string

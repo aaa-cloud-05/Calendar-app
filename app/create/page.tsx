@@ -40,6 +40,25 @@ const CreateInvitationPage = () => {
     },
   ]
 
+  const createInvitation = async () => {
+    const payload = {
+      ...draft,
+      dateCandidates: draft.dateCandidates.map(dc => ({
+        ...dc,
+        date: dc.date.toISOString(),
+      })),
+    }
+
+    await fetch("/api/invitations", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    })
+  }
+
+
   /* ===== タグ ===== */
 
   const addTag = (tag: Tag) => {
@@ -87,6 +106,15 @@ const CreateInvitationPage = () => {
         }
       />
 
+      <input
+        className="w-full text-lg font-bold border-b outline-none"
+        placeholder="場所"
+        value={draft.location}
+        onChange={(e) =>
+          setDraft((prev) => ({ ...prev, location: e.target.value }))
+        }
+      />
+
       <InvitationHeroCard
         draft={draft}
         participants={participants}
@@ -131,7 +159,11 @@ const CreateInvitationPage = () => {
         onChange={updateSettings}
       />
 
-      <Button size="lg" className="w-full rounded-xl">
+      <Button
+        size="lg"
+        className="w-full rounded-xl"
+        onClick={createInvitation}
+      >
         作成する
       </Button>
 

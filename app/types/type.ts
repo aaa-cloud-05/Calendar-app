@@ -37,3 +37,13 @@ export type Participant = {
   avatar?: string
   role: "organizer" | "member"
 }
+
+export type InvitationDraftPayload = Omit<InvitationDraft, "dateCandidates"> & {
+  dateCandidates: {
+    id: string
+    date: string
+    startTime?: string
+    endTime?: string
+    comment?: string
+  }[]
+}

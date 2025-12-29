@@ -47,3 +47,41 @@ export type InvitationDraftPayload = Omit<InvitationDraft, "dateCandidates"> & {
     comment?: string
   }[]
 }
+
+export type InvitationFromDB = {
+  id: string
+  invite_token: string
+  created_at: string
+
+  title: string
+  description?: string | null
+  location?: string | null
+  budget?: number | null
+
+  tags: Tag[]
+  date_candidates: {
+    id: string
+    date: string   // YYYY-MM-DD
+    startTime?: string
+    endTime?: string
+    comment?: string
+  }[]
+
+  settings: InvitationDraft["settings"]
+}
+
+export type Invitation = {
+  id: string
+  inviteToken: string
+  createdAt: string
+
+  title: string
+  description?: string
+  location?: string
+  budget?: number
+
+  tags: Tag[]
+  dateCandidates: DateCandidate[]
+
+  settings: InvitationDraft["settings"]
+}

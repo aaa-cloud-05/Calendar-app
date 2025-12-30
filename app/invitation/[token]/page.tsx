@@ -1,24 +1,32 @@
+import { InvitationDraft } from "@/app/types/type"
 import InvitationHeroCard from "@/components/HeroCard"
-import { deserializeInvitation } from "@/lib/invitation/deserialize"
 
-type Props = {
-  params: { token: string }
-}
-
-const InvitePage = async ({ params }: Props) => {
+async function getDraft(
+  token: string
+): Promise<InvitationDraft> {
   const res = await fetch(
-    `localhost:3000/api/invitations/${params.token}`,
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/invitations/${token}`,
     { cache: "no-store" }
   )
 
-  if (!res.ok) {
-    return <div>招待が見つかりません</div>
-  }
+  if (!res.ok) throw new Error("failed")
 
-  const dbInvitation = await res.json()
-  const invitation = deserializeInvitation(dbInvitation)
-
-  return <InvitationHeroCard draft={invitation} participants={[]} />
+  return res.json()
 }
 
-export default InvitePage
+export default async function Page({
+  params,
+}: {
+  params: { token: string }
+}) {
+  const draft = await getDraft(params.token)
+
+  return (
+    <div className="max-w-md mx-auto p-4">
+      <InvitationHeroCard
+        draft={draft}
+        participants={[]}
+      />
+    </div>
+  )
+}

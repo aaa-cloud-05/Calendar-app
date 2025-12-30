@@ -38,50 +38,26 @@ export type Participant = {
   role: "organizer" | "member"
 }
 
-export type InvitationDraftPayload = Omit<InvitationDraft, "dateCandidates"> & {
-  dateCandidates: {
-    id: string
-    date: string
-    startTime?: string
-    endTime?: string
-    comment?: string
-  }[]
-}
-
 export type InvitationFromDB = {
   id: string
   invite_token: string
   created_at: string
 
   title: string
-  description?: string | null
-  location?: string | null
-  budget?: number | null
+  description: string | null
+  location: string | null
+  budget: number | null
+  start_time: string | null
+  end_time: string | null
 
-  tags: Tag[]
+  tags: Tag[] | null
   date_candidates: {
     id: string
-    date: string   // YYYY-MM-DD
+    date: string // YYYY-MM-DD
     startTime?: string
     endTime?: string
     comment?: string
   }[]
-
-  settings: InvitationDraft["settings"]
-}
-
-export type Invitation = {
-  id: string
-  inviteToken: string
-  createdAt: string
-
-  title: string
-  description?: string
-  location?: string
-  budget?: number
-
-  tags: Tag[]
-  dateCandidates: DateCandidate[]
 
   settings: InvitationDraft["settings"]
 }

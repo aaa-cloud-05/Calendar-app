@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server"
 import { supabaseServer } from "@/lib/supabase/server"
+import { deserializeInvitation } from "@/lib/invitation/deserialize"
+import { InvitationFromDB } from "@/app/types/type"
 
 export async function GET(
   _: Request,
@@ -11,11 +13,16 @@ export async function GET(
     .from("invitations")
     .select("*")
     .eq("invite_token", params.token)
-    .single()
+    .single<InvitationFromDB>()
 
   if (error || !data) {
-    return NextResponse.json({ error: "not found" }, { status: 404 })
+    return NextResponse.json(
+      { error: "not found" },
+      { status: 404 }
+    )
   }
 
-  return NextResponse.json(data)
+  const invitation = deserializeInvitation(data)
+
+  return NextResponse.json(invitation)
 }

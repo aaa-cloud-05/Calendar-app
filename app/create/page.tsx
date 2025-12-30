@@ -45,7 +45,7 @@ const CreateInvitationPage = () => {
       ...draft,
       dateCandidates: draft.dateCandidates.map(dc => ({
         ...dc,
-        date: dc.date.toISOString(),
+        date: dc.date.toISOString().slice(0, 10),
       })),
     }
 
@@ -57,6 +57,7 @@ const CreateInvitationPage = () => {
       body: JSON.stringify(payload),
     })
   }
+
 
 
   /* ===== タグ ===== */

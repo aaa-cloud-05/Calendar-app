@@ -45,11 +45,11 @@ const CreateInvitationPage = () => {
       ...draft,
       dateCandidates: draft.dateCandidates.map(dc => ({
         ...dc,
-        date: dc.date.toISOString().slice(0, 10),
+        date: dc.date,
       })),
     }
 
-    await fetch("/api/invitations", {
+    await fetch("/api/invitation", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -57,8 +57,6 @@ const CreateInvitationPage = () => {
       body: JSON.stringify(payload),
     })
   }
-
-
 
   /* ===== タグ ===== */
 

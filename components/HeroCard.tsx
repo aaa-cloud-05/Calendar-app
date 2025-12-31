@@ -10,7 +10,7 @@ import {
 import { cn } from "@/lib/utils"
 
 import { InvitationDraft, Participant } from "@/app/types/type"
-import { Send, VerifiedIcon } from "lucide-react"
+import { VerifiedIcon } from "lucide-react"
 
 type InvitationHeroCardProps = {
   draft: InvitationDraft
@@ -108,15 +108,6 @@ export default function InvitationHeroCard({
                 </p>
               </div>
             </div>
-
-            {onMessageClick && (
-              <button
-                onClick={onMessageClick}
-                className="w-10 h-10 rounded-full bg-primary/5 hover:bg-primary/10 flex items-center justify-center transition-colors"
-              >
-                <Send className=""/>
-              </button>
-            )}
           </div>
         )}
 

@@ -14,7 +14,7 @@ export type InvitationDraft = {
     anonymousResponse: boolean
     hideParticipants: boolean
     allowComments: boolean
-    deadline?: string // ISO
+    deadline?: string
   }
 }
 
@@ -25,8 +25,8 @@ export type Tag = {
 
 export type DateCandidate = {
   id: string
-  date: Date       // "2025-10-05"
-  startTime?: string  // "18:00"
+  date: string
+  startTime?: string
   endTime?: string
   comment?: string
 }
@@ -38,26 +38,8 @@ export type Participant = {
   role: "organizer" | "member"
 }
 
-export type InvitationFromDB = {
+export interface Invitation extends InvitationDraft {
   id: string
-  invite_token: string
-  created_at: string
-
-  title: string
-  description: string | null
-  location: string | null
-  budget: number | null
-  start_time: string | null
-  end_time: string | null
-
-  tags: Tag[] | null
-  date_candidates: {
-    id: string
-    date: string // YYYY-MM-DD
-    startTime?: string
-    endTime?: string
-    comment?: string
-  }[]
-
-  settings: InvitationDraft["settings"]
+  inviteToken: string
+  createdAt: string
 }

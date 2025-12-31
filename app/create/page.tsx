@@ -8,6 +8,9 @@ import SettingSection from "@/components/SettingSection"
 import { InvitationDraft, Participant, Tag } from "@/app/types/type"
 import InvitationHeroCard from "@/components/HeroCard"
 import { Button } from "@/components/ui/button"
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
 
 const CreateInvitationPage = () => {
   const [draft, setDraft] = useState<InvitationDraft>({
@@ -96,8 +99,8 @@ const CreateInvitationPage = () => {
   return (
     <div className="max-w-xl mx-auto space-y-6 p-4">
       {/* タイトル */}
-      <input
-        className="w-full text-lg font-bold border-b outline-none"
+      <Input
+        className="w-full outline-none"
         placeholder="イベントタイトル (必須)"
         value={draft.title}
         onChange={(e) =>
@@ -105,8 +108,8 @@ const CreateInvitationPage = () => {
         }
       />
 
-      <input
-        className="w-full text-lg font-bold border-b outline-none"
+      <Input
+        className="w-full outline-none"
         placeholder="場所"
         value={draft.location}
         onChange={(e) =>
@@ -114,14 +117,7 @@ const CreateInvitationPage = () => {
         }
       />
 
-      <InvitationHeroCard
-        draft={draft}
-        participants={participants}
-        heroImageUrl={undefined}
-        onMessageClick={() => console.log("message")}
-      />
-
-      <textarea
+      <Textarea
         className="w-full text-sm border rounded-lg p-3 resize-none"
         placeholder="参加者へのメッセージ（任意）"
         rows={3}
@@ -158,13 +154,39 @@ const CreateInvitationPage = () => {
         onChange={updateSettings}
       />
 
-      <Button
-        size="lg"
-        className="w-full rounded-xl"
-        onClick={createInvitation}
-      >
-        作成する
-      </Button>
+
+      {/* プレビュー */}
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button
+            className="w-full rounded-xl"
+          >
+            プレビュー
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>招待カードのプレビュー</DialogTitle>
+            <DialogDescription>
+              この内容で招待カードを作成しますか？
+            </DialogDescription>
+          </DialogHeader>
+          <InvitationHeroCard
+            draft={draft}
+            participants={participants}
+            heroImageUrl={undefined}
+            onMessageClick={() => console.log("message")}
+          />
+          <DialogFooter>
+            <Button
+              type="submit"
+              onClick={createInvitation}
+            >
+              作成する
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* デバッグ */}
       <pre className="text-xs bg-muted p-3 rounded-lg">

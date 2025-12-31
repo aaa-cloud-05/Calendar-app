@@ -1,6 +1,12 @@
 import type { InvitationDraft } from "@/app/types/type"
 import { Switch } from "./ui/switch"
 import { Label } from "./ui/label"
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover"
+import { Button } from "./ui/button"
+import { ChevronDownIcon } from "lucide-react"
+import { Calendar } from "./ui/calendar"
+import { useState } from "react"
+import { ja } from "date-fns/locale"
 
 type SettingSectionProps = {
   settings: InvitationDraft["settings"]
@@ -11,6 +17,12 @@ type SettingSectionProps = {
 }
 
 const SettingSection = ({ settings, onChange }: SettingSectionProps) => {
+  const [open, setOpen] = useState(false)
+  const selectedDate = settings.deadline
+    ? new Date(settings.deadline)
+    : undefined
+
+
   return (
     <section className="space-y-3">
       <label className="text-[11px] font-extrabold text-muted-foreground uppercase tracking-widest ml-1">
@@ -57,17 +69,39 @@ const SettingSection = ({ settings, onChange }: SettingSectionProps) => {
 
         {/* 締切 */}
         <div className="space-y-1">
-          <p className="text-xs font-bold text-muted-foreground">
-            回答締切（任意）
-          </p>
-          <input
-            type="datetime-local"
-            value={settings.deadline ?? ""}
-            onChange={(e) =>
-              onChange("deadline", e.target.value || undefined)
-            }
-            className="w-full border border-border rounded-lg px-3 py-2 text-sm"
-          />
+          <div className="flex gap-3 items-center justify-between">
+            <Label htmlFor="date" className="px-1">
+              回答締切（任意）
+            </Label>
+            <Popover open={open} onOpenChange={setOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  id="date"
+                  className="w-48 justify-between font-normal"
+                >
+                  {settings.deadline
+                    ? new Date(settings.deadline).toLocaleDateString("ja-JP")
+                    : "選択してください"}
+                  <ChevronDownIcon />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto overflow-hidden p-0" align="start">
+                <Calendar
+                  mode="single"
+                  locale={ja}
+                  selected={selectedDate}
+                  captionLayout="dropdown"
+                  onSelect={(date) =>
+                    onChange(
+                      "deadline",
+                      date ? date.toISOString() : undefined
+                    )
+                  }
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
         </div>
       </div>
     </section>

@@ -66,7 +66,7 @@ export default function InvitationHeroCard({
               variant="secondary"
               className="bg-black/40 text-white border-white/10 text-[10px]"
             >
-              {remainingDays ? "残り{remainingDays}日" : "期限なし"}
+              {remainingDays ? `残り${remainingDays}日` : "期限なし"}
             </Badge>
           </div>
         

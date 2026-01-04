@@ -43,3 +43,28 @@ export interface Invitation extends InvitationDraft {
   inviteToken: string
   createdAt: string
 }
+
+
+// response
+export type AvailabilityStatus = "ok" | "maybe" | "ng"
+
+export type Badge = {
+  id: string
+  label: string
+}
+
+export type DateResponse = {
+  candidateId: string
+  status: AvailabilityStatus
+  badges: Badge[]
+}
+
+export type InvitationResponse = {
+  id: string
+  invitationId: string
+  guestId: string 
+  guestName: string
+  comment: string
+  availabilities: DateResponse[]
+  createdAt: string
+}

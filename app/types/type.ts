@@ -62,9 +62,13 @@ export type DateResponse = {
 export type InvitationResponse = {
   id: string
   invitationId: string
-  guestId: string 
-  guestName: string
-  comment: string
+
+  respondentToken: string
+  name?: string
+
+  comment?: string
+
   availabilities: DateResponse[]
+
   createdAt: string
 }

@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation"
 import InvitationHeroCard from "@/components/HeroCard"
 import { getInvitationDraft } from "./actions"
+import Link from "next/link"
 
 export default async function Page({
   params,
@@ -21,6 +22,7 @@ export default async function Page({
         draft={invitation}
         participants={[]}
       />
+      <Link href={`/answer/${token}`}>Click to answer</Link>
     </div>
   )
 }

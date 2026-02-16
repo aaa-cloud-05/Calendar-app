@@ -25,7 +25,7 @@ export type Tag = {
 
 export type DateCandidate = {
   id: string
-  date: string
+  date: Date
   startTime?: string
   endTime?: string
   comment?: string

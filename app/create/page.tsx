@@ -48,7 +48,7 @@ const CreateInvitationPage = () => {
       ...draft,
       dateCandidates: draft.dateCandidates.map(dc => ({
         ...dc,
-        date: dc.date,
+        date: dc.date.toISOString(),
       })),
     }
 

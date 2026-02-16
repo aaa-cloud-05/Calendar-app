@@ -21,6 +21,9 @@ export async function getInvitationDraft(token: string): Promise<InvitationDraft
     endTime: data.end_time || "",
     tags: data.tags || [],
     settings: data.settings || {},
-    dateCandidates: data.date_candidates || [],
+    dateCandidates: (data.date_candidates || []).map((dc: { id: string; date: string; startTime?: string; endTime?: string; comment?: string }) => ({
+      ...dc,
+      date: new Date(dc.date),
+    })),
   }
 }

@@ -21,7 +21,7 @@ const DateCandidateSection = ({ dateCandidates, onChange }: Props) => {
         const existing = dateCandidates.find(
           (c) => c.date.toDateString() === date.toDateString()
         )
-        return existing ?? { date }
+        return existing ?? { id: crypto.randomUUID(), date }
       })
     )
   }

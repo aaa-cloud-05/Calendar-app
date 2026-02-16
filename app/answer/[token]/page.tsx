@@ -1,4 +1,6 @@
 import AnswerTile from "@/components/AnswerTile"
+import { Button } from "@/components/ui/button"
+import { Textarea } from "@/components/ui/textarea"
 
 export default async function AnswerPage({
   params,
@@ -9,14 +11,12 @@ export default async function AnswerPage({
 
   return (
     <div className="max-w-md mx-auto p-4 py-8">
-      <header className="mb-8">
         <h1>{token}</h1>
         <AnswerTile/>
         <AnswerTile/>
         <AnswerTile/>
-        <div>Comment Area</div>
-        <div>Send Button (CTA)</div>
-      </header>
+        <Textarea/>
+        <Button>Send Answer</Button>
     </div>
   )
 }

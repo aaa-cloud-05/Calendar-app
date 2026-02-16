@@ -22,7 +22,14 @@ export default async function Page({
         draft={invitation}
         participants={[]}
       />
-      <Link href={`/answer/${token}`}>Click to answer</Link>
+
+      <div>
+        <h1>Response Status</h1>
+        <div></div>
+        <div></div>
+      </div>
+      
+      <Link href={`/answer/${token}`}>Answer Button (CTA)</Link>
     </div>
   )
 }

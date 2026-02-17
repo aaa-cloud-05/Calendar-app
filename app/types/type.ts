@@ -46,11 +46,12 @@ export interface Invitation extends InvitationDraft {
 
 
 // response
-export type AvailabilityStatus = "yes" | "maybe" | "no"
+export type ResponseDraft = {
+  invitationId: string
 
-export type Badge = {
-  id: string
-  label: string
+  name?: string
+  availability: DateResponse[]
+  comment?: string
 }
 
 export type DateResponse = {
@@ -59,16 +60,15 @@ export type DateResponse = {
   badges: Badge[]
 }
 
-export type InvitationResponse = {
+export type Badge = {
   id: string
-  invitationId: string
+  label: string
+}
 
-  respondentToken: string
-  name?: string
+export type AvailabilityStatus = "yes" | "maybe" | "no"
 
-  comment?: string
-
-  availabilities: DateResponse[]
-
+export interface Response extends ResponseDraft {
+  id: string
+  guestId: string
   createdAt: string
 }

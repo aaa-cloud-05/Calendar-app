@@ -19,15 +19,22 @@ export default async function AnswerPage({
 
   return (
     <div className="max-w-md mx-auto p-4 py-8">
-        <h1>{token}</h1>
-        <AnswerTile/>
-        <AnswerTile/>
-        <AnswerTile/>
-        <Textarea/>
-        <Button>Send Answer</Button>
-        <pre className="text-xs bg-muted p-3 rounded-lg">
-          {JSON.stringify(invitation, null, 2)}
-        </pre>
+      <h1>{token}</h1>
+      {/* name */}
+      <Textarea/>
+      
+      <AnswerTile/>
+      <AnswerTile/>
+      <AnswerTile/>
+      
+      {/* comment */}
+      <Textarea/>
+
+      <Button>Send Answer</Button>
+      
+      <pre className="text-xs bg-muted p-3 rounded-lg">
+        {JSON.stringify(invitation, null, 2)}
+      </pre>
     </div>
   )
 }

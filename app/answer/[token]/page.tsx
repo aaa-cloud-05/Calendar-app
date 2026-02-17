@@ -1,6 +1,4 @@
-import AnswerTile from "@/components/AnswerTile"
-import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
+import AnswerScreen from "@/components/AnswerScreen"
 import { supabaseServer } from "@/lib/supabase/server"
 
 export default async function AnswerPage({
@@ -16,22 +14,15 @@ export default async function AnswerPage({
     .select("*")
     .eq("invite_token", token)
     .single()
+  
+  if (!invitation) {
+    return <div>Not found</div>
+  }
 
   return (
     <div className="max-w-md mx-auto p-4 py-8">
       <h1>{token}</h1>
-      {/* name */}
-      <Textarea/>
-      
-      <AnswerTile/>
-      <AnswerTile/>
-      <AnswerTile/>
-      
-      {/* comment */}
-      <Textarea/>
-
-      <Button>Send Answer</Button>
-      
+      <AnswerScreen invitation={invitation}/>
       <pre className="text-xs bg-muted p-3 rounded-lg">
         {JSON.stringify(invitation, null, 2)}
       </pre>

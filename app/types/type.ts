@@ -47,7 +47,7 @@ export interface Invitation extends InvitationDraft {
 
 // response
 export type ResponseDraft = {
-  invitationId: string
+  invitationToken: string
 
   name?: string
   availability: DateResponse[]

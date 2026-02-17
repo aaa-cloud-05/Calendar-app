@@ -3,11 +3,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs'
 import { Circle, Triangle, X } from 'lucide-react'
 
-const AnswerTile = () => {
+const AnswerTile = ({ candidates }: { candidates: any }) => {
   return (
     <div>
       <Card>
-        <div>Date and Time</div>
         <Tabs defaultValue="yes" className="w-full">
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="yes"><Circle /></TabsTrigger>

@@ -15,7 +15,6 @@ const AnswerTile = () => {
             <TabsTrigger value="no"><X /></TabsTrigger>
           </TabsList>
         </Tabs>
-        <div>Preferred Order</div>
         <div>Tag Section</div>
       </Card>
     </div>

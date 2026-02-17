@@ -46,7 +46,7 @@ export interface Invitation extends InvitationDraft {
 
 
 // response
-export type AvailabilityStatus = "ok" | "maybe" | "ng"
+export type AvailabilityStatus = "yes" | "maybe" | "no"
 
 export type Badge = {
   id: string

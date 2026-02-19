@@ -30,7 +30,11 @@ const AnswerScreen = ({invitation}: { invitation: any }) => {
         }
       />
       
-      <AnswerTile candidates={invitation.candidates}/>
+      <AnswerTile
+        candidates={invitation.date_candidates}
+        response={response}  
+        setResponse={setResponse}
+      />
       
       {/* comment */}
       <Textarea

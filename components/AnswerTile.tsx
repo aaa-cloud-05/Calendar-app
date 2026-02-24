@@ -3,16 +3,18 @@
 import { Card } from "./ui/card"
 import { Tabs, TabsList, TabsTrigger } from "./ui/tabs"
 import { Circle, Triangle, X } from "lucide-react"
-import { DateCandidate, ResponseDraft, AvailabilityStatus } from "@/app/types/type"
+import { DateCandidate, ResponseDraft, AvailabilityStatus, Tag } from "@/app/types/type"
 
 type Props = {
   candidates: DateCandidate[]
+  tags: Tag[]
   response: ResponseDraft
   setResponse: React.Dispatch<React.SetStateAction<ResponseDraft>>
 }
 
 export default function AnswerTile({
   candidates,
+  tags,
   response,
   setResponse,
 }: Props) {
@@ -50,6 +52,49 @@ export default function AnswerTile({
     return response.availability.find(
       a => a.candidateId === candidateId
     )?.status
+  }
+
+  function toggleBadge(candidateId: string, tag: Tag) {
+    setResponse(prev => {
+      const existing = prev.availability.find(
+        a => a.candidateId === candidateId
+      )
+
+      if (!existing) {
+        return {
+          ...prev,
+          availability: [
+            ...prev.availability,
+            {
+              candidateId,
+              status: "maybe",
+              badges: [tag],
+            },
+          ],
+        }
+      }
+
+      const hasBadge = existing.badges.some(b => b.id === tag.id)
+      return {
+        ...prev,
+        availability: prev.availability.map(a =>
+          a.candidateId === candidateId
+            ? {
+                ...a,
+                badges: hasBadge
+                  ? a.badges.filter(b => b.id !== tag.id)
+                  : [...a.badges, tag],
+              }
+            : a
+        ),
+      }
+    })
+  }
+
+  function hasBadge(candidateId: string, tagId: string) {
+    return response.availability
+      .find(a => a.candidateId === candidateId)
+      ?.badges.some(b => b.id === tagId)
   }
 
   return (
@@ -90,8 +135,23 @@ export default function AnswerTile({
             </Tabs>
 
             {/* Tag */}
-            <div className="text-xs text-muted-foreground">
-              Tag Section
+            <div className="flex flex-wrap gap-2">
+              {tags.map(tag => {
+                const active = hasBadge(candidate.id, tag.id)
+
+                return (
+                  <button
+                    key={tag.id}
+                    type="button"
+                    onClick={() => toggleBadge(candidate.id, tag)}
+                    className={`text-xs px-2 py-1 border rounded ${
+                      active ? "bg-primary text-primary-foreground" : "text-muted-foreground"
+                    }`}
+                  >
+                    {tag.label}
+                  </button>
+                )
+              })}
             </div>
 
           </Card>

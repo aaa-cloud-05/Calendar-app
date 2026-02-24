@@ -15,6 +15,11 @@ const AnswerScreen = ({invitation}: { invitation: any }) => {
     comment: "",
   })
 
+  const TAG = [
+    {id:"1", label: "オンラインで"},
+    {id:"2", label: "遅刻"},
+  ]
+
   return (
     <div>
       {/* name */}
@@ -32,6 +37,7 @@ const AnswerScreen = ({invitation}: { invitation: any }) => {
       
       <AnswerTile
         candidates={invitation.date_candidates}
+        tags={TAG}
         response={response}  
         setResponse={setResponse}
       />

@@ -2,14 +2,14 @@
 
 import { supabaseServer } from "@/lib/supabase/server"
 import { revalidatePath } from "next/cache"
-import { DateResponse } from "@/app/types/type"
+import { DateResponse, Tag } from "@/app/types/type"
 
 type SubmitPayload = {
   invitationId: string
   guestId: string
-  guestName: string
-  comment: string
-  availabilities: DateResponse[]
+  availability: DateResponse[]
+  selectedTags: Tag[]
+  comment?: string
 }
 
 export async function submitResponse(token: string, payload: SubmitPayload) {
@@ -21,9 +21,9 @@ export async function submitResponse(token: string, payload: SubmitPayload) {
       {
         invitation_id: payload.invitationId,
         guest_id: payload.guestId,
-        guest_name: payload.guestName,
-        comment: payload.comment,
-        availabilities: payload.availabilities,
+        availability: payload.availability,
+        selected_tags: payload.selectedTags,
+        comment: payload.comment ?? null,
       },
       { onConflict: "invitation_id, guest_id" }
     )

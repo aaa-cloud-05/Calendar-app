@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation"
 import InvitationHeroCard from "@/components/HeroCard"
-import { getInvitationDraft } from "./actions"
+import { getInvitationDraft, getInvitationResponses } from "./actions"
 import Link from "next/link"
 
 export default async function Page({
@@ -16,6 +16,8 @@ export default async function Page({
     return notFound()
   }
 
+  const responses = await getInvitationResponses(invitation.id)
+
   return (
     <div className="max-w-md mx-auto p-4">
       <InvitationHeroCard
@@ -26,7 +28,7 @@ export default async function Page({
       <div>
         <h1>Response Status</h1>
         <div></div>
-        <div></div>
+        <div>{responses.length}</div>
       </div>
       
       <Link href={`/answer/${token}`}>Answer Button (CTA)</Link>

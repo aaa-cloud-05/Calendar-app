@@ -2,6 +2,16 @@ import { notFound } from "next/navigation"
 import InvitationHeroCard from "@/components/HeroCard"
 import { getInvitationDraft, getInvitationResponses } from "./actions"
 import Link from "next/link"
+import ResponseStatusChart from "@/components/ResponseStatusChart"
+
+type AvailabilityItem = {
+  candidateId: string
+  status: "yes" | "maybe" | "no"
+}
+
+function isAvailabilityArray(value: unknown): value is AvailabilityItem[] {
+  return Array.isArray(value)
+}
 
 export default async function Page({
   params,
@@ -18,6 +28,36 @@ export default async function Page({
 
   const responses = await getInvitationResponses(invitation.id)
 
+  const chartData = invitation.dateCandidates.map((candidate) => {
+    const summary = {
+      yes: 0,
+      maybe: 0,
+      no: 0,
+    }
+
+    responses.forEach((response) => {
+      if (!isAvailabilityArray(response.availability)) return
+
+      const availability = response.availability.find(
+        (item) => item?.candidateId === candidate.id
+      )
+
+      if (!availability) return
+
+      if (availability.status === "yes") summary.yes += 1
+      if (availability.status === "maybe") summary.maybe += 1
+      if (availability.status === "no") summary.no += 1
+    })
+
+    return {
+      date: new Date(candidate.date).toLocaleDateString("ja-JP", {
+        month: "numeric",
+        day: "numeric",
+      }),
+      ...summary,
+    }
+  })
+
   return (
     <div className="max-w-md mx-auto p-4">
       <InvitationHeroCard
@@ -27,8 +67,8 @@ export default async function Page({
 
       <div>
         <h1>Response Status</h1>
-        <div></div>
-        <div>{responses.length}</div>
+        <ResponseStatusChart data={chartData} />
+        <div>回答数: {responses.length}</div>
       </div>
       
       <Link href={`/answer/${token}`}>Answer Button (CTA)</Link>

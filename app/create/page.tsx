@@ -11,8 +11,10 @@ import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
+import { useRouter } from "next/navigation"
 
 const CreateInvitationPage = () => {
+  const router = useRouter()
   const [draft, setDraft] = useState<InvitationDraft>({
     title: "",
     description: "",
@@ -52,13 +54,21 @@ const CreateInvitationPage = () => {
       })),
     }
 
-    await fetch("/api/invitation", {
+    const res = await fetch("/api/invitation", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(payload),
     })
+    
+    if (!res.ok) return
+
+    const data = await res.json()
+
+    if (!data.inviteToken) return
+
+    router.push(`/invitation/${data.inviteToken}?share=1`)
   }
 
   /* ===== タグ ===== */

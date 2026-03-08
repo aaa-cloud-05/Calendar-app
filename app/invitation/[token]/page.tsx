@@ -4,6 +4,7 @@ import { getInvitationDraft, getInvitationResponses } from "./actions"
 import Link from "next/link"
 import ResponseStatusChart from "@/components/ResponseStatusChart"
 import DateCandidateRanking from "@/components/DateCandidateRanking"
+import InvitationShareDialog from "@/components/InvitationShareDialog"
 
 type AvailabilityItem = {
   candidateId: string
@@ -16,10 +17,14 @@ function isAvailabilityArray(value: unknown): value is AvailabilityItem[] {
 
 export default async function Page({
   params,
+  searchParams,
 }: {
   params: Promise<{ token: string }>
+  searchParams: Promise<{ share?: string }>
 }) {
   const { token } = await params
+  const { share } = await searchParams
+  const isShareOpen = share === "1"
   
   const invitation = await getInvitationDraft(token)
 
@@ -80,7 +85,10 @@ export default async function Page({
         <div>回答数: {responses.length}</div>
       </div>
       
-      <Link href={`/answer/${token}`}>Answer Button (CTA)</Link>
+      <div className="flex items-center gap-3">
+        <Link href={`/answer/${token}`}>Answer Button (CTA)</Link>
+        <InvitationShareDialog token={token} defaultOpen={isShareOpen} />
+      </div>
     </div>
   )
 }

@@ -13,10 +13,12 @@ export async function POST(req: Request) {
 
   const supabase = await supabaseServer()
 
-  const { error } = await supabase
+  const inviteToken = crypto.randomUUID()
+
+  const { data, error } = await supabase
     .from("invitations")
     .insert({
-      invite_token: crypto.randomUUID(),
+      invite_token: inviteToken,
 
       title: body.title,
       description: body.description ?? null,
@@ -29,6 +31,8 @@ export async function POST(req: Request) {
       date_candidates: body.dateCandidates,
       settings: body.settings,
     })
+    .select("id, invite_token")
+    .single()
 
   if (error) {
     return NextResponse.json(
@@ -37,5 +41,5 @@ export async function POST(req: Request) {
     )
   }
 
-  return NextResponse.json({ ok: true })
+  return NextResponse.json({ ok: true, id: data.id, inviteToken: data.invite_token })
 }

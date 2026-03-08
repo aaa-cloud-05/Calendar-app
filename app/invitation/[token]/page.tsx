@@ -3,6 +3,7 @@ import InvitationHeroCard from "@/components/HeroCard"
 import { getInvitationDraft, getInvitationResponses } from "./actions"
 import Link from "next/link"
 import ResponseStatusChart from "@/components/ResponseStatusChart"
+import DateCandidateRanking from "@/components/DateCandidateRanking"
 
 type AvailabilityItem = {
   candidateId: string
@@ -58,6 +59,13 @@ export default async function Page({
     }
   })
 
+  const rankingData = [...chartData]
+    .map((item) => ({
+      ...item,
+      score: item.yes + item.maybe * 0.6 - item.no * 0.8,
+    }))
+    .sort((a, b) => b.score - a.score)
+
   return (
     <div className="max-w-md mx-auto p-4">
       <InvitationHeroCard
@@ -66,7 +74,8 @@ export default async function Page({
       />
 
       <div>
-        <h1>Response Status</h1>
+        <DateCandidateRanking items={rankingData} />
+        <br />
         <ResponseStatusChart data={chartData} />
         <div>回答数: {responses.length}</div>
       </div>

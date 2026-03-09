@@ -185,7 +185,6 @@ const CreateInvitationPage = () => {
             draft={draft}
             participants={participants}
             heroImageUrl={undefined}
-            onMessageClick={() => console.log("message")}
           />
           <DialogFooter>
             <Button
@@ -199,9 +198,9 @@ const CreateInvitationPage = () => {
       </Dialog>
 
       {/* デバッグ */}
-      <pre className="text-xs bg-muted p-3 rounded-lg">
+      {/* <pre className="text-xs bg-muted p-3 rounded-lg">
         {JSON.stringify(draft, null, 2)}
-      </pre>
+      </pre> */}
     </div>
   )
 }

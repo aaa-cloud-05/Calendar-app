@@ -9,7 +9,7 @@ export default async function AnswerPage({
   const { token } = await params
 
   const supabase = await supabaseServer();
-  const { data: invitation, error} = await supabase
+  const { data: invitation } = await supabase
     .from("invitations")
     .select("*")
     .eq("invite_token", token)
@@ -21,11 +21,11 @@ export default async function AnswerPage({
 
   return (
     <div className="max-w-md mx-auto p-4 py-8">
-      <h1>{token}</h1>
       <AnswerScreen invitation={invitation}/>
-      <pre className="text-xs bg-muted p-3 rounded-lg">
+
+      {/* <pre className="text-xs bg-muted p-3 rounded-lg">
         {JSON.stringify(invitation, null, 2)}
-      </pre>
+      </pre> */}
     </div>
   )
 }

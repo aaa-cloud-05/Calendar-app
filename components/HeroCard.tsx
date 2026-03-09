@@ -16,14 +16,12 @@ type InvitationHeroCardProps = {
   draft: InvitationDraft
   participants: Participant[]
   heroImageUrl?: string
-  onMessageClick?: () => void
 }
 
 export default function InvitationHeroCard({
   draft,
   participants,
   heroImageUrl,
-  onMessageClick,
 }: InvitationHeroCardProps) {
   const organizer = participants.find(
     (p) => p.role === "organizer"

@@ -101,9 +101,10 @@ const AnswerScreen = ({invitation}: { invitation: InvitationPayload }) => {
       <Button onClick={handleSubmit} disabled={isSubmitting || !guestId}>
         {isSubmitting ? "Sending..." : "Send Answer"}
       </Button>
-      <pre className="text-xs bg-muted p-3 rounded-lg">
+      
+      {/* <pre className="text-xs bg-muted p-3 rounded-lg">
         {JSON.stringify(response, null, 2)}
-      </pre>
+      </pre> */}
     </div>
   )
 }

@@ -12,7 +12,6 @@ export type InvitationDraft = {
 
   settings: {
     anonymousResponse: boolean
-    hideParticipants: boolean
     allowComments: boolean
     deadline?: string
   }

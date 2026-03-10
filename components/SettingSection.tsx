@@ -43,18 +43,6 @@ const SettingSection = ({ settings, onChange }: SettingSectionProps) => {
           />
         </div>
 
-        {/* 参加者非表示 */}
-        <div className="flex items-center justify-between">
-          <Label htmlFor="hide-participants" className="text-sm font-medium">
-            参加者を非表示
-          </Label>
-          <Switch
-            id="hide-participants"
-            checked={settings.hideParticipants}
-            onCheckedChange={(v) => onChange("hideParticipants", v)}
-          />
-        </div>
-
         {/* コメント許可 */}
         <div className="flex items-center justify-between">
           <Label htmlFor="allow-comments" className="text-sm font-medium">

@@ -14,7 +14,6 @@ export const mapDBToDraft = (data: any): InvitationDraft => {
     tags: data.tags || [],
     settings: data.settings || {
       anonymousResponse: false,
-      hideParticipants: false,
       allowComments: false,
     },
 

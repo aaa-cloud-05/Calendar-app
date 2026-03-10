@@ -19,13 +19,13 @@ const CreateInvitationPage = () => {
     title: "",
     description: "",
     location: "",
+    budget: undefined,
     startTime: "",
     endTime: "",
     tags: [],
     dateCandidates: [],
     settings: {
       anonymousResponse: false,
-      hideParticipants: false,
       allowComments: false,
       deadline: undefined,
     },
@@ -126,6 +126,50 @@ const CreateInvitationPage = () => {
           setDraft((prev) => ({ ...prev, location: e.target.value }))
         }
       />
+
+      <Input
+        className="w-full outline-none"
+        type="number"
+        inputMode="numeric"
+        min={0}
+        placeholder="予算"
+        value={draft.budget ?? ""}
+        onChange={(e) =>
+          setDraft((prev) => ({
+            ...prev,
+            budget:
+              e.target.value === ""
+                ? undefined
+                : Number(e.target.value),
+          }))
+        }
+      />
+
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <Input
+          className="w-full outline-none"
+          type="time"
+          value={draft.startTime ?? ""}
+          onChange={(e) =>
+            setDraft((prev) => ({
+              ...prev,
+              startTime: e.target.value,
+            }))
+          }
+        />
+
+        <Input
+          className="w-full outline-none"
+          type="time"
+          value={draft.endTime ?? ""}
+          onChange={(e) =>
+            setDraft((prev) => ({
+              ...prev,
+              endTime: e.target.value,
+            }))
+          }
+        />
+      </div>
 
       <Textarea
         className="w-full text-sm border rounded-lg p-3 resize-none"

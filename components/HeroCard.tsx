@@ -8,6 +8,7 @@ import {
   AvatarImage,
 } from "@/components/ui/avatar"
 import { cn } from "@/lib/utils"
+import { useState } from "react"
 
 import { InvitationDraft, Participant } from "@/app/types/type"
 import { VerifiedIcon } from "lucide-react"
@@ -23,6 +24,7 @@ export default function InvitationHeroCard({
   participants,
   heroImageUrl,
 }: InvitationHeroCardProps) {
+  const [renderedAt] = useState(() => Date.now())
   const organizer = participants.find(
     (p) => p.role === "organizer"
   )
@@ -32,7 +34,7 @@ export default function InvitationHeroCard({
         0,
         Math.ceil(
           (new Date(draft.settings.deadline).getTime() -
-            Date.now()) /
+            renderedAt) /
             (1000 * 60 * 60 * 24)
         )
       )

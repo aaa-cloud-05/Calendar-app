@@ -1,6 +1,26 @@
 import { InvitationDraft } from "@/app/types/type"
 
-export const mapDBToDraft = (data: any): InvitationDraft => {
+type DbDateCandidate = {
+  id: string
+  date: string | Date
+  startTime?: string
+  endTime?: string
+  comment?: string
+}
+
+type DbInvitationDraft = {
+  title: string
+  description?: string
+  location?: string
+  budget?: number
+  start_time?: string
+  end_time?: string
+  tags?: InvitationDraft["tags"]
+  settings?: InvitationDraft["settings"]
+  date_candidates?: DbDateCandidate[]
+}
+
+export const mapDBToDraft = (data: DbInvitationDraft): InvitationDraft => {
 
   return {
     title: data.title,
@@ -18,7 +38,7 @@ export const mapDBToDraft = (data: any): InvitationDraft => {
     },
 
     dateCandidates: Array.isArray(data.date_candidates)
-      ? data.date_candidates.map((dc: any) => ({
+      ? data.date_candidates.map((dc) => ({
           id: dc.id,
           date: new Date(dc.date),
           startTime: dc.startTime,

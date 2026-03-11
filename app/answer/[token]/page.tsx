@@ -19,9 +19,14 @@ export default async function AnswerPage({
     return <div>Not found</div>
   }
 
+  const isDeadlinePassed = invitation.settings?.deadline
+    ? new Date(invitation.settings.deadline) < new Date()
+    : false
+
+
   return (
     <div className="max-w-md mx-auto p-4 py-8">
-      <AnswerScreen invitation={invitation}/>
+      <AnswerScreen invitation={invitation} initialDeadlinePassed={isDeadlinePassed} />
 
       {/* <pre className="text-xs bg-muted p-3 rounded-lg">
         {JSON.stringify(invitation, null, 2)}

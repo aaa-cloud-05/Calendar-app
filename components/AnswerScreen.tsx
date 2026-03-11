@@ -6,7 +6,6 @@ import { Textarea } from './ui/textarea'
 import { Button } from './ui/button'
 import { Input } from './ui/input'
 import { DateCandidate, ResponseDraft, Tag } from '@/app/types/type'
-import { useGuestUser } from '@/hooks/useGuestUser'
 import { submitResponse } from '@/app/answer/[token]/action'
 
 type InvitationPayload = {
@@ -21,14 +20,28 @@ type InvitationPayload = {
   }
 }
 
-const AnswerScreen = ({invitation}: { invitation: InvitationPayload }) => {
-  const guestId = useGuestUser()
+const getOrCreateGuestId = () => {
+  const storedId = localStorage.getItem("guest_id")
+  if (storedId) {
+    return storedId
+  }
+
+  const newId = crypto.randomUUID()
+  localStorage.setItem("guest_id", newId)
+  return newId
+}
+
+const AnswerScreen = ({
+  invitation,
+  initialDeadlinePassed,
+}: {
+  invitation: InvitationPayload
+  initialDeadlinePassed: boolean
+}) => {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const anonymousResponseEnabled = invitation.settings?.anonymousResponse ?? false
   const allowComments = invitation.settings?.allowComments ?? true
-  const isDeadlinePassed = invitation.settings?.deadline
-    ? new Date(invitation.settings.deadline) < new Date()
-    : false
+  const isDeadlinePassed = initialDeadlinePassed
   const [response, setResponse] = useState<ResponseDraft>({
     invitationToken: invitation.invite_token,
     name: "",
@@ -54,7 +67,9 @@ const AnswerScreen = ({invitation}: { invitation: InvitationPayload }) => {
   }, [response.availability])
 
   const handleSubmit = async () => {
-    if (!guestId || isSubmitting || isDeadlinePassed) return
+    if (isSubmitting || isDeadlinePassed) return
+
+    const guestId = getOrCreateGuestId()
 
     setIsSubmitting(true)
 
@@ -111,7 +126,7 @@ const AnswerScreen = ({invitation}: { invitation: InvitationPayload }) => {
           }))
         }
       />
-      <Button onClick={handleSubmit} disabled={isSubmitting || !guestId || isDeadlinePassed}>
+      <Button onClick={handleSubmit} disabled={isSubmitting || isDeadlinePassed}>
         {isSubmitting ? "Sending..." : "Send Answer"}
       </Button>
 

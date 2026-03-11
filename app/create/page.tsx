@@ -42,9 +42,13 @@ const CreateInvitationPage = () => {
     ] : []
 
   const createInvitation = async () => {
+    const sortedDateCandidates = [...draft.dateCandidates].sort(
+      (a, b) => a.date.getTime() - b.date.getTime()
+    )
+
     const payload = {
       ...draft,
-      dateCandidates: draft.dateCandidates.map(dc => ({
+      dateCandidates: sortedDateCandidates.map(dc => ({
         ...dc,
         date: dc.date.toISOString(),
       })),

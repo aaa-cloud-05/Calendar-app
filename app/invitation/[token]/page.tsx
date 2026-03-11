@@ -34,6 +34,9 @@ export default async function Page({
   }
 
   const responses = await getInvitationResponses(invitation.id)
+  const commentResponses = responses.filter(
+    (response) => response.comment && response.comment.trim().length > 0
+  )
 
   const chartData = invitation.dateCandidates.map((candidate) => {
     const summary = {
@@ -90,6 +93,23 @@ export default async function Page({
         <br />
         <ResponseStatusChart data={chartData} />
         <div>回答数: {responses.length}</div>
+        <div className="mt-4 space-y-2">
+          <h2 className="text-sm font-semibold">コメント({commentResponses.length})</h2>
+          {commentResponses.length === 0 ? (
+            <p className="text-sm text-muted-foreground">コメントはまだありません。</p>
+          ) : (
+            <ul className="space-y-2">
+              {commentResponses.map((response) => (
+                <li key={response.id} className="rounded-md border p-3">
+                  {!invitation.settings.anonymousResponse && response.name?.trim() && (
+                    <p className="text-xs text-muted-foreground">{response.name.trim()}</p>
+                  )}
+                  <p className="text-sm whitespace-pre-wrap">{response.comment}</p>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
       </div>
       
       <div className="flex flex-col items-start gap-2">

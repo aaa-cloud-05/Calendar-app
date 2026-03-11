@@ -5,6 +5,7 @@ export type InvitationResponse = {
   id: string
   invitation_id: string
   guest_id: string
+  name: string | null
   availability: unknown
   selected_tags: unknown
   comment: string | null
@@ -49,7 +50,7 @@ export async function getInvitationResponses(
 
   const { data, error } = await supabase
     .from("responses")
-    .select("id, invitation_id, guest_id, availability, selected_tags, comment, created_at")
+    .select("id, invitation_id, guest_id, name, availability, selected_tags, comment, created_at")
     .eq("invitation_id", invitationId)
     .order("created_at", { ascending: false })
 

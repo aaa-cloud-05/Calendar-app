@@ -7,6 +7,7 @@ import { DateResponse, Tag } from "@/app/types/type"
 type SubmitPayload = {
   invitationId: string
   guestId: string
+  name?: string
   availability: DateResponse[]
   selectedTags: Tag[]
   comment?: string
@@ -21,6 +22,7 @@ export async function submitResponse(token: string, payload: SubmitPayload) {
       {
         invitation_id: payload.invitationId,
         guest_id: payload.guestId,
+        name: payload.name?.trim() || null,
         availability: payload.availability,
         selected_tags: payload.selectedTags,
         comment: payload.comment ?? null,

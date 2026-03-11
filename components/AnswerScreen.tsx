@@ -52,6 +52,7 @@ const AnswerScreen = ({invitation}: { invitation: InvitationPayload }) => {
       await submitResponse(invitation.invite_token, {
         invitationId: invitation.id,
         guestId,
+        name: response.name,
         availability: response.availability,
         selectedTags,
         comment: response.comment,

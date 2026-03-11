@@ -1,4 +1,5 @@
 export type InvitationDraft = {
+  creatorName: string
   title: string
   description?: string
   location?: string

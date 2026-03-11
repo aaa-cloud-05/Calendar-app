@@ -9,6 +9,7 @@ type DbDateCandidate = {
 }
 
 type DbInvitationDraft = {
+  creator_name?: string
   title: string
   description?: string
   location?: string
@@ -23,6 +24,7 @@ type DbInvitationDraft = {
 export const mapDBToDraft = (data: DbInvitationDraft): InvitationDraft => {
 
   return {
+    creatorName: data.creator_name || "",
     title: data.title,
     description: data.description || "",
     location: data.location || "",

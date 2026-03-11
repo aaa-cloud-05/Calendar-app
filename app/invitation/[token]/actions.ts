@@ -26,6 +26,7 @@ export async function getInvitationDraft(
 
   return {
     id: data.id,
+    creatorName: data.creator_name || "",
     title: data.title,
     description: data.description || "",
     location: data.location || "",

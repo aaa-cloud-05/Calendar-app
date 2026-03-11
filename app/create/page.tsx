@@ -16,6 +16,7 @@ import { useRouter } from "next/navigation"
 const CreateInvitationPage = () => {
   const router = useRouter()
   const [draft, setDraft] = useState<InvitationDraft>({
+    creatorName: "",
     title: "",
     description: "",
     location: "",
@@ -31,19 +32,14 @@ const CreateInvitationPage = () => {
     },
   })
 
-  const participants: Participant[] = [
-    {
-      id: "f",
-      name: "j",
-      role: "member"
-    },
-    {
-      id: "p_2",
-      name: "ユウタ",
-      avatar: "/avatar-1.png",
-      role: "organizer",
-    },
-  ]
+  const participants: Participant[] = draft.creatorName
+    ? [
+        {
+          id: "organizer",
+          name: draft.creatorName,
+          role: "organizer",
+        },
+    ] : []
 
   const createInvitation = async () => {
     const payload = {
@@ -108,6 +104,15 @@ const CreateInvitationPage = () => {
 
   return (
     <div className="max-w-xl mx-auto space-y-6 p-4">
+      <Input
+        className="w-full outline-none"
+        placeholder="作成者名 (必須)"
+        value={draft.creatorName}
+        onChange={(e) =>
+          setDraft((prev) => ({ ...prev, creatorName: e.target.value }))
+        }
+      />
+
       {/* タイトル */}
       <Input
         className="w-full outline-none"

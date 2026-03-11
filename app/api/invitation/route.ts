@@ -4,7 +4,7 @@ import { supabaseServer } from "@/lib/supabase/server"
 export async function POST(req: Request) {
   const body = await req.json()
 
-  if (!body.title || body.dateCandidates.length === 0) {
+  if (!body.creatorName || !body.title || body.dateCandidates.length === 0) {
     return NextResponse.json(
       { error: "invalid draft" },
       { status: 400 }
@@ -20,6 +20,7 @@ export async function POST(req: Request) {
     .insert({
       invite_token: inviteToken,
 
+      creator_name: body.creatorName,
       title: body.title,
       description: body.description ?? null,
       location: body.location ?? null,

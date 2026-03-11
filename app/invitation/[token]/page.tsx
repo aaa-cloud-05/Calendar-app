@@ -75,7 +75,9 @@ export default async function Page({
     <div className="max-w-md mx-auto p-4">
       <InvitationHeroCard
         draft={invitation}
-        participants={[]}
+        participants={invitation.creatorName
+          ? [{ id: "organizer", name: invitation.creatorName, role: "organizer" }]
+          : []}
       />
 
       <div>

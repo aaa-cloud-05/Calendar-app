@@ -14,11 +14,21 @@ type InvitationPayload = {
   invite_token: string
   date_candidates: DateCandidate[]
   tags?: Tag[]
+  settings?: {
+    anonymousResponse?: boolean
+    allowComments?: boolean
+    deadline?: string
+  }
 }
 
 const AnswerScreen = ({invitation}: { invitation: InvitationPayload }) => {
   const guestId = useGuestUser()
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const anonymousResponseEnabled = invitation.settings?.anonymousResponse ?? false
+  const allowComments = invitation.settings?.allowComments ?? true
+  const isDeadlinePassed = invitation.settings?.deadline
+    ? new Date(invitation.settings.deadline) < new Date()
+    : false
   const [response, setResponse] = useState<ResponseDraft>({
     invitationToken: invitation.invite_token,
     name: "",
@@ -44,7 +54,7 @@ const AnswerScreen = ({invitation}: { invitation: InvitationPayload }) => {
   }, [response.availability])
 
   const handleSubmit = async () => {
-    if (!guestId || isSubmitting) return
+    if (!guestId || isSubmitting || isDeadlinePassed) return
 
     setIsSubmitting(true)
 
@@ -69,8 +79,9 @@ const AnswerScreen = ({invitation}: { invitation: InvitationPayload }) => {
       {/* name */}
       <Input
         className="w-full outline-none"
-        placeholder="名前"
+        placeholder={anonymousResponseEnabled ? "匿名設定されています" : "名前"}
         value={response.name}
+        disabled={anonymousResponseEnabled}
         onChange={(e) =>
           setResponse((prev) => ({
             ...prev,
@@ -89,9 +100,10 @@ const AnswerScreen = ({invitation}: { invitation: InvitationPayload }) => {
       {/* comment */}
       <Textarea
         className="w-full text-sm border rounded-lg p-3 resize-none"
-        placeholder="コメント"
+        placeholder={allowComments ? "コメント" : "コメントは許可されていません"}
         rows={3}
         value={response.comment ?? ""}
+        disabled={!allowComments}
         onChange={(e) =>
           setResponse((prev) => ({
             ...prev,
@@ -99,9 +111,15 @@ const AnswerScreen = ({invitation}: { invitation: InvitationPayload }) => {
           }))
         }
       />
-      <Button onClick={handleSubmit} disabled={isSubmitting || !guestId}>
+      <Button onClick={handleSubmit} disabled={isSubmitting || !guestId || isDeadlinePassed}>
         {isSubmitting ? "Sending..." : "Send Answer"}
       </Button>
+
+      {isDeadlinePassed && (
+        <p className="mt-2 text-xs text-muted-foreground">
+          回答期限を過ぎているため、送信を停止しています。
+        </p>
+      )}
       
       {/* <pre className="text-xs bg-muted p-3 rounded-lg">
         {JSON.stringify(response, null, 2)}

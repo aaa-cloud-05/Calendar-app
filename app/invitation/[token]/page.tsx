@@ -5,6 +5,7 @@ import Link from "next/link"
 import ResponseStatusChart from "@/components/ResponseStatusChart"
 import DateCandidateRanking from "@/components/DateCandidateRanking"
 import InvitationShareDialog from "@/components/InvitationShareDialog"
+import { Button } from "@/components/ui/button"
 
 type AvailabilityItem = {
   candidateId: string
@@ -71,6 +72,10 @@ export default async function Page({
     }))
     .sort((a, b) => b.score - a.score)
 
+  const isDeadlinePassed = invitation.settings.deadline
+    ? new Date(invitation.settings.deadline) < new Date()
+    : false
+
   return (
     <div className="max-w-md mx-auto p-4">
       <InvitationHeroCard
@@ -87,8 +92,21 @@ export default async function Page({
         <div>回答数: {responses.length}</div>
       </div>
       
-      <div className="flex items-center gap-3">
-        <Link href={`/answer/${token}`}>Answer Button (CTA)</Link>
+      <div className="flex flex-col items-start gap-2">
+        <Button asChild disabled={isDeadlinePassed}>
+          <Link
+            href={isDeadlinePassed ? "#" : `/answer/${token}`}
+            aria-disabled={isDeadlinePassed}
+            tabIndex={isDeadlinePassed ? -1 : 0}
+          >
+            Answer
+          </Link>
+        </Button>
+        {isDeadlinePassed && (
+          <p className="text-xs text-muted-foreground">
+            ※締め切りを過ぎているため回答できません。
+          </p>
+        )}
         <InvitationShareDialog token={token} defaultOpen={isShareOpen} />
       </div>
     </div>

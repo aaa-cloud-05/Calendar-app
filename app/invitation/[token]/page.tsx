@@ -6,6 +6,7 @@ import ResponseStatusChart from "@/components/ResponseStatusChart"
 import DateCandidateRanking from "@/components/DateCandidateRanking"
 import InvitationShareDialog from "@/components/InvitationShareDialog"
 import { Button } from "@/components/ui/button"
+import InvitationRecentTracker from "@/components/InvitationRecentTracker"
 
 type AvailabilityItem = {
   candidateId: string
@@ -81,6 +82,7 @@ export default async function Page({
 
   return (
     <div className="max-w-md mx-auto p-4">
+      <InvitationRecentTracker token={token} title={invitation.title} />
       <InvitationHeroCard
         draft={invitation}
         participants={invitation.creatorName

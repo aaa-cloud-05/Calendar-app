@@ -4,6 +4,7 @@ import { getInvitationDraft, getInvitationResponses } from "./actions"
 import Link from "next/link"
 import ResponseStatusChart from "@/components/ResponseStatusChart"
 import DateCandidateRanking from "@/components/DateCandidateRanking"
+import DateCandidateSummaryList from "@/components/DateCandidateSummaryList"
 import InvitationShareDialog from "@/components/InvitationShareDialog"
 import { Button } from "@/components/ui/button"
 import InvitationRecentTracker from "@/components/InvitationRecentTracker"
@@ -11,10 +12,32 @@ import InvitationRecentTracker from "@/components/InvitationRecentTracker"
 type AvailabilityItem = {
   candidateId: string
   status: "yes" | "maybe" | "no"
+  badges?: {
+    id?: string
+    label?: string
+  }[]
+}
+
+type CandidateResponder = {
+  id: string
+  displayName: string
+  status: "yes" | "maybe" | "no"
+  badges: string[]
+  comment?: string
+}
+
+function isAvailabilityItem(value: unknown): value is AvailabilityItem {
+  if (!value || typeof value !== "object") return false
+
+  const item = value as Record<string, unknown>
+  return (
+    typeof item.candidateId === "string" &&
+    (item.status === "yes" || item.status === "maybe" || item.status === "no")
+  )
 }
 
 function isAvailabilityArray(value: unknown): value is AvailabilityItem[] {
-  return Array.isArray(value)
+  return Array.isArray(value) && value.every(isAvailabilityItem)
 }
 
 export default async function Page({
@@ -39,14 +62,17 @@ export default async function Page({
     (response) => response.comment && response.comment.trim().length > 0
   )
 
-  const chartData = invitation.dateCandidates.map((candidate) => {
+  const candidateSummaries = invitation.dateCandidates.map((candidate) => {
     const summary = {
       yes: 0,
       maybe: 0,
       no: 0,
     }
 
-    responses.forEach((response) => {
+    const tagMap = new Map<string, number>()
+    const responders: CandidateResponder[] = []
+
+    responses.forEach((response, index) => {
       if (!isAvailabilityArray(response.availability)) return
 
       const availability = response.availability.find(
@@ -58,16 +84,60 @@ export default async function Page({
       if (availability.status === "yes") summary.yes += 1
       if (availability.status === "maybe") summary.maybe += 1
       if (availability.status === "no") summary.no += 1
+
+      const badges = availability.badges
+        ?.map((badge) => badge?.label?.trim())
+        .filter((label): label is string => Boolean(label)) ?? []
+
+      badges.forEach((label) => {
+        tagMap.set(label, (tagMap.get(label) ?? 0) + 1)
+      })
+
+      const defaultName = `参加者${responses.length - index}`
+
+      responders.push({
+        id: response.id,
+        displayName: invitation.settings.anonymousResponse
+          ? defaultName
+          : response.name?.trim() || defaultName,
+        status: availability.status,
+        badges,
+        comment: response.comment?.trim() || undefined,
+      })
+    })
+
+    const dateLabel = new Date(candidate.date).toLocaleDateString("ja-JP", {
+      month: "numeric",
+      day: "numeric",
+      weekday: "short",
     })
 
     return {
+      candidateId: candidate.id,
+      dateLabel,
       date: new Date(candidate.date).toLocaleDateString("ja-JP", {
         month: "numeric",
         day: "numeric",
       }),
+      timeLabel:
+        candidate.startTime && candidate.endTime
+          ? `${candidate.startTime} - ${candidate.endTime}`
+          : candidate.startTime || candidate.endTime || undefined,
+      comment: candidate.comment,
+      tags: Array.from(tagMap.entries())
+        .map(([label, count]) => ({ label, count }))
+        .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label, "ja")),
+      responders,
       ...summary,
     }
   })
+
+  const chartData = candidateSummaries.map(({ date, yes, maybe, no }) => ({
+    date,
+    yes,
+    maybe,
+    no,
+  }))
 
   const rankingData = [...chartData]
     .map((item) => ({
@@ -94,6 +164,9 @@ export default async function Page({
         <DateCandidateRanking items={rankingData} />
         <br />
         <ResponseStatusChart data={chartData} />
+        <div className="mt-4">
+          <DateCandidateSummaryList items={candidateSummaries} />
+        </div>
         <div>回答数: {responses.length}</div>
         <div className="mt-4 space-y-2">
           <h2 className="text-sm font-semibold">コメント({commentResponses.length})</h2>

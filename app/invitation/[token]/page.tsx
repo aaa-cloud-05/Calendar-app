@@ -1,13 +1,14 @@
 import { notFound } from "next/navigation"
-import InvitationHeroCard from "@/components/HeroCard"
+// import InvitationHeroCard from "@/components/HeroCard"
 import { getInvitationDraft, getInvitationResponses } from "./actions"
-import Link from "next/link"
-import ResponseStatusChart from "@/components/ResponseStatusChart"
-import DateCandidateRanking from "@/components/DateCandidateRanking"
-import DateCandidateSummaryList from "@/components/DateCandidateSummaryList"
-import InvitationShareDialog from "@/components/InvitationShareDialog"
-import { Button } from "@/components/ui/button"
+// import Link from "next/link"
+// import ResponseStatusChart from "@/components/ResponseStatusChart"
+// import DateCandidateRanking from "@/components/DateCandidateRanking"
+// import DateCandidateSummaryList from "@/components/DateCandidateSummaryList"
+// import InvitationShareDialog from "@/components/InvitationShareDialog"
+// import { Button } from "@/components/ui/button"
 import InvitationRecentTracker from "@/components/InvitationRecentTracker"
+import InvitationMobileDashboard from "@/components/InvitationMobileDashboard"
 
 type AvailabilityItem = {
   candidateId: string
@@ -132,17 +133,14 @@ export default async function Page({
     }
   })
 
-  const chartData = candidateSummaries.map(({ date, yes, maybe, no }) => ({
-    date,
-    yes,
-    maybe,
-    no,
-  }))
-
-  const rankingData = [...chartData]
-    .map((item) => ({
-      ...item,
-      score: item.yes + item.maybe * 0.6 - item.no * 0.8,
+  const rankingData = candidateSummaries
+    .map(({ date, timeLabel, yes, maybe, no }) => ({
+      date,
+      timeLabel,
+      yes,
+      maybe,
+      no,
+      score: yes + maybe * 0.6 - no * 0.8,
     }))
     .sort((a, b) => b.score - a.score)
 
@@ -153,14 +151,28 @@ export default async function Page({
   return (
     <div className="max-w-md mx-auto p-4">
       <InvitationRecentTracker token={token} title={invitation.title} />
-      <InvitationHeroCard
-        draft={invitation}
+      <InvitationMobileDashboard
+        token={token}
+        invitation={invitation}
         participants={invitation.creatorName
           ? [{ id: "organizer", name: invitation.creatorName, role: "organizer" }]
           : []}
+        rankingData={rankingData}
+        candidateSummaries={candidateSummaries}
+        commentResponses={commentResponses.map((response) => ({
+          id: response.id,
+          name:
+            !invitation.settings.anonymousResponse && response.name?.trim()
+              ? response.name.trim()
+              : undefined,
+          comment: response.comment!.trim(),
+        }))}
+        responsesCount={responses.length}
+        isDeadlinePassed={isDeadlinePassed}
+        isShareOpen={isShareOpen}
       />
 
-      <div>
+      {/* <div>
         <DateCandidateRanking items={rankingData} />
         <br />
         <ResponseStatusChart data={chartData} />
@@ -203,7 +215,7 @@ export default async function Page({
           </p>
         )}
         <InvitationShareDialog token={token} defaultOpen={isShareOpen} />
-      </div>
+      </div> */}
     </div>
   )
 }

@@ -14,11 +14,10 @@ import {
   Clock3,
   MapPin,
   MessageSquareText,
-  Sparkles,
-  Users,
   VerifiedIcon,
 } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar"
+import { ReactNode } from "react"
 
 type RankingItem = {
   date: string
@@ -101,6 +100,47 @@ function getRemainingDays(deadline?: string) {
   )
 }
 
+function SectionCard({ title, subtitle, children }: { title: string; subtitle?: string; children: ReactNode }) {
+  return (
+    <Card className="space-y-4 rounded-2xl p-5 shadow-sm">
+      <div>
+        <h2 className="text-base font-semibold">{title}</h2>
+        {subtitle ? <p className="text-sm text-muted-foreground">{subtitle}</p> : null}
+      </div>
+      {children}
+    </Card>
+  )
+}
+
+function OverviewItem({
+  icon,
+  label,
+  value,
+}: {
+  icon: ReactNode
+  label: string
+  value: string
+}) {
+  return (
+    <div className="rounded-xl border bg-background p-3">
+      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+        {icon}
+        <span>{label}</span>
+      </div>
+      <p className="mt-2 text-sm font-medium leading-relaxed">{value}</p>
+    </div>
+  )
+}
+
+function CandidateScore({ label, value }: { label: string; value: number }) {
+  return (
+    <div className="rounded-xl border p-3 text-center">
+      <p className="text-xs text-muted-foreground">{label}</p>
+      <p className="mt-1 text-lg font-semibold">{value}</p>
+    </div>
+  )
+}
+
 export default function InvitationMobileDashboard({
   token,
   invitation,
@@ -120,126 +160,80 @@ export default function InvitationMobileDashboard({
   return (
     <Tabs defaultValue="overview" className="pb-28">
       <TabsContent value="overview" className="mt-0 space-y-4">
-        <Card className="overflow-hidden rounded-3xl border-none bg-liner-to-br from-orange-400 via-rose-400 to-red-500 p-5 text-white shadow-lg">
-          <div className="flex items-start justify-between gap-3">
-            <Badge className="border-white/20 bg-black/20 text-white hover:bg-black/20">
-              {remainingDays != null ? `残り${remainingDays}日` : "期限なし"}
-            </Badge>
-          </div>
-          <div className="mt-4">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/80">Invite</p>
-            <h1 className="mt-2 text-2xl font-extrabold leading-tight tracking-tight">
-              {invitation.title || "イベントタイトル未設定"}
-            </h1>
+          <Card className="space-y-4 rounded-2xl p-5 shadow-sm">
+            <div className="flex items-center justify-between gap-3">
+              <h1 className="text-2xl font-bold leading-tight">{invitation.title || "イベントタイトル未設定"}</h1>
+              <Badge variant="outline">{remainingDays != null ? `残り${remainingDays}日` : "期限なし"}</Badge>
           </div>
           {organizer ? (
-            <div className="mt-5 flex items-center gap-3 rounded-2xl bg-black/15 p-3">
+            <div className="flex items-center gap-3 rounded-xl border p-3">
               <div className="relative w-fit">
                 <Avatar>
                   <AvatarImage alt={organizer.name} src={organizer.avatar} />
                   <AvatarFallback>{organizer.name.slice(0, 1)}</AvatarFallback>
                 </Avatar>
-                <span className="-bottom-1 -right-1 absolute flex size-4 items-center justify-center rounded-full bg-background">
+                <span className="absolute -right-1 -bottom-1 flex size-4 items-center justify-center rounded-full bg-background">
                   <VerifiedIcon className="size-full fill-blue-500 text-white" />
                 </span>
               </div>
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-wide text-white/70">Organizer</p>
-                <p className="text-sm font-bold">{organizer.name}</p>
+                <p className="text-xs text-muted-foreground">主催者</p>
+                <p className="text-sm font-semibold">{organizer.name}</p>
               </div>
             </div>
           ) : null}
+        
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            {invitation.description?.trim() || "参加者へのメッセージはまだありません。"}
+          </p>
         </Card>
-
-        <Card className="space-y-4 rounded-3xl border-none bg-blue-400 p-5 text-white shadow-lg">
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/80">
-                Overview
-              </p>
-              <h2 className="mt-1 text-lg font-bold">招待の概要</h2>
+          <SectionCard title="招待の概要" subtitle={`回答 ${responsesCount} 件`}>
+            <div className="grid grid-cols-2 gap-3">
+              <OverviewItem
+                icon={<CalendarClock className="size-4" />}
+                label="締め切り"
+                value={formatDeadline(invitation.settings.deadline)}
+              />
+              <OverviewItem
+                icon={<Clock3 className="size-4" />}
+                label="基本時刻"
+                value={formatTimeRange(invitation.startTime, invitation.endTime)}
+              />
+              <OverviewItem icon={<MapPin className="size-4" />} label="場所" value={invitation.location || "未設定"} />
+              <OverviewItem
+                icon={<CircleDollarSign className="size-4" />}
+                label="予算"
+                value={formatBudget(invitation.budget)}
+              />
             </div>
-            <Badge className="border-white/20 bg-white/15 text-white">回答 {responsesCount} 件</Badge>
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            <div className="rounded-2xl bg-white/10 p-3 backdrop-blur-sm">
-              <div className="flex items-center gap-2 text-xs text-white/80">
-                <CalendarClock className="size-4" />
-                <span>締め切り</span>
-              </div>
-              <p className="mt-2 text-sm font-semibold leading-relaxed">{formatDeadline(invitation.settings.deadline)}</p>
-            </div>
-            <div className="rounded-2xl bg-white/10 p-3 backdrop-blur-sm">
-              <div className="flex items-center gap-2 text-xs text-white/80">
-                <Clock3 className="size-4" />
-                <span>基本時刻</span>
-              </div>
-              <p className="mt-2 text-sm font-semibold">{formatTimeRange(invitation.startTime, invitation.endTime)}</p>
-            </div>
-            <div className="rounded-2xl bg-white/10 p-3 backdrop-blur-sm">
-              <div className="flex items-center gap-2 text-xs text-white/80">
-                <MapPin className="size-4" />
-                <span>場所</span>
-              </div>
-              <p className="mt-2 text-sm font-semibold leading-relaxed">{invitation.location || "未設定"}</p>
-            </div>
-            <div className="rounded-2xl bg-white/10 p-3 backdrop-blur-sm">
-              <div className="flex items-center gap-2 text-xs text-white/80">
-                <CircleDollarSign className="size-4" />
-                <span>予算</span>
-              </div>
-              <p className="mt-2 text-sm font-semibold">{formatBudget(invitation.budget)}</p>
-            </div>
-          </div>
-        </Card>
-
-        <Card className="space-y-4 rounded-3xl p-5 shadow-sm">
-          <div className="flex items-center gap-2">
-            <Sparkles className="size-4 text-orange-500" />
-            <div>
-              <h2 className="text-base font-semibold">有力な候補日</h2>
-              <p className="text-sm text-muted-foreground">上位候補をすぐ比較できます。</p>
-            </div>
-          </div>
-
+          </SectionCard>
+          <SectionCard title="有力な候補日" subtitle="上位候補を比較できます。">
           {topCandidate ? (
-            <div className="rounded-2xl border border-orange-200 bg-orange-50 p-4 dark:border-orange-900/60 dark:bg-orange-950/30">
+            <div className="rounded-xl border p-4">
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-orange-600 dark:text-orange-300">
-                    1位
-                  </p>
-                  <p className="mt-1 text-lg font-bold">{topCandidate.date}</p>
+                  <p className="text-xs text-muted-foreground">1位</p>
+                  <p className="mt-1 text-lg font-semibold">{topCandidate.date}</p>
                   <p className="mt-1 text-sm text-muted-foreground">{topCandidate.timeLabel || "時刻未設定"}</p>
                 </div>
-                <Badge className="bg-orange-500 text-white hover:bg-orange-500">Best</Badge>
+                <Badge>Best</Badge>
               </div>
-              <div className="mt-4 grid grid-cols-3 gap-2 text-center">
-                <div className="rounded-2xl bg-background/80 p-3">
-                  <p className="text-xs text-muted-foreground">Yes</p>
-                  <p className="mt-1 text-lg font-semibold text-emerald-600">{topCandidate.yes}</p>
-                </div>
-                <div className="rounded-2xl bg-background/80 p-3">
-                  <p className="text-xs text-muted-foreground">Maybe</p>
-                  <p className="mt-1 text-lg font-semibold text-amber-600">{topCandidate.maybe}</p>
-                </div>
-                <div className="rounded-2xl bg-background/80 p-3">
-                  <p className="text-xs text-muted-foreground">No</p>
-                  <p className="mt-1 text-lg font-semibold text-rose-600">{topCandidate.no}</p>
-                </div>
+              <div className="mt-4 grid grid-cols-3 gap-2">
+                <CandidateScore label="Yes" value={topCandidate.yes} />
+                <CandidateScore label="Maybe" value={topCandidate.maybe} />
+                <CandidateScore label="No" value={topCandidate.no} />
               </div>
             </div>
           ) : (
             <p className="text-sm text-muted-foreground">候補日がまだありません。</p>
           )}
 
-          {nextCandidates.length > 0 && (
+          {nextCandidates.length > 0 ? (
             <div className="space-y-2">
               {nextCandidates.map((item, index) => (
                 <div
                   key={`${item.date}-${index}`}
-                  className="flex items-center justify-between rounded-2xl border px-4 py-3"
+                  className="flex items-center justify-between rounded-xl border px-4 py-3"
                 >
                   <div>
                     <p className="text-sm font-medium">{index + 2}位: {item.date}</p>
@@ -252,49 +246,31 @@ export default function InvitationMobileDashboard({
                 </div>
               ))}
             </div>
-          )}
-        </Card>
+        ) : null}
+        </SectionCard>
 
-        <Card className="space-y-4 rounded-3xl p-5 shadow-sm">
-          <div className="flex items-center gap-2">
-            <Users className="size-4 text-sky-500" />
-            <div>
-              <h2 className="text-base font-semibold">参加判断に必要な情報</h2>
-              <p className="text-sm text-muted-foreground">タグやメッセージをまとめて確認できます。</p>
-            </div>
-          </div>
-
-          <div className="space-y-3">
-            <div>
-              <p className="text-xs font-medium text-muted-foreground">条件タグ</p>
-              {invitation.tags.length > 0 ? (
-                <div className="mt-2 flex flex-wrap gap-2">
-                  {invitation.tags.map((tag) => (
-                    <Badge key={tag.id} variant="secondary" className="rounded-full px-3 py-1">
-                      {tag.label}
-                    </Badge>
-                  ))}
-                </div>
-              ) : (
-                <p className="mt-2 text-sm text-muted-foreground">タグは設定されていません。</p>
-              )}
-            </div>
-
-            <div>
-              <p className="text-xs font-medium text-muted-foreground">メッセージ</p>
-              <div className="mt-2 rounded-2xl bg-muted/40 p-4 text-sm leading-relaxed text-muted-foreground">
-                {invitation.description?.trim() || "参加者へのメッセージはまだありません。"}
+        <SectionCard title="参加判断に必要な情報">
+          <div>
+            <p className="text-xs font-medium text-muted-foreground">条件タグ</p>
+            {invitation.tags.length > 0 ? (
+              <div className="mt-2 flex flex-wrap gap-2">
+                {invitation.tags.map((tag) => (
+                  <Badge key={tag.id} variant="secondary" className="rounded-full px-3 py-1">
+                    {tag.label}
+                  </Badge>
+                ))}
               </div>
-            </div>
+            ) : (
+              <p className="mt-2 text-sm text-muted-foreground">タグは設定されていません。</p>
+            )}
           </div>
-        </Card>
+        </SectionCard>
       </TabsContent>
 
       <TabsContent value="responses" className="mt-0 space-y-4">
-
         <DateCandidateSummaryList items={candidateSummaries} />
 
-        <Card className="space-y-3 rounded-3xl p-5 shadow-sm">
+        <Card className="space-y-3 rounded-2xl p-5 shadow-sm">
           <div className="flex items-center gap-2">
             <MessageSquareText className="size-4 text-violet-500" />
             <h2 className="text-base font-semibold">コメント ({commentResponses.length})</h2>
@@ -304,10 +280,8 @@ export default function InvitationMobileDashboard({
           ) : (
             <ul className="space-y-2">
               {commentResponses.map((response) => (
-                <li key={response.id} className="rounded-2xl border p-3">
-                  {response.name ? (
-                    <p className="text-xs text-muted-foreground">{response.name}</p>
-                  ) : null}
+                <li key={response.id} className="rounded-xl border p-3">
+                  {response.name ? <p className="text-xs text-muted-foreground">{response.name}</p> : null}
                   <p className="mt-1 text-sm whitespace-pre-wrap">{response.comment}</p>
                 </li>
               ))}
@@ -328,14 +302,16 @@ export default function InvitationMobileDashboard({
             </Link>
           </Button>
           {isDeadlinePassed ? (
-            <p className="text-center text-xs text-muted-foreground">
-              ※締め切りを過ぎているため回答できません。
-            </p>
+            <p className="text-center text-xs text-muted-foreground">※締め切りを過ぎているため回答できません。</p>
           ) : null}
           <div className="flex items-center gap-2">
             <TabsList className="grid h-12 w-full grid-cols-2 rounded-2xl p-1">
-              <TabsTrigger value="overview" className="rounded-xl">概要</TabsTrigger>
-              <TabsTrigger value="responses" className="rounded-xl">回答状況</TabsTrigger>
+              <TabsTrigger value="overview" className="rounded-xl">
+                概要
+              </TabsTrigger>
+              <TabsTrigger value="responses" className="rounded-xl">
+                回答状況
+              </TabsTrigger>
             </TabsList>
             <InvitationShareDialog token={token} defaultOpen={isShareOpen} />
           </div>

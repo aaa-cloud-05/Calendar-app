@@ -165,50 +165,6 @@ export default async function Page({
         isShareOpen={isShareOpen}
       />
 
-      {/* <div>
-        <DateCandidateRanking items={rankingData} />
-        <br />
-        <ResponseStatusChart data={chartData} />
-        <div className="mt-4">
-          <DateCandidateSummaryList items={candidateSummaries} />
-        </div>
-        <div>回答数: {responses.length}</div>
-        <div className="mt-4 space-y-2">
-          <h2 className="text-sm font-semibold">コメント({commentResponses.length})</h2>
-          {commentResponses.length === 0 ? (
-            <p className="text-sm text-muted-foreground">コメントはまだありません。</p>
-          ) : (
-            <ul className="space-y-2">
-              {commentResponses.map((response) => (
-                <li key={response.id} className="rounded-md border p-3">
-                  {!invitation.settings.anonymousResponse && response.name?.trim() && (
-                    <p className="text-xs text-muted-foreground">{response.name.trim()}</p>
-                  )}
-                  <p className="text-sm whitespace-pre-wrap">{response.comment}</p>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-      </div>
-      
-      <div className="flex flex-col items-start gap-2">
-        <Button asChild disabled={isDeadlinePassed}>
-          <Link
-            href={isDeadlinePassed ? "#" : `/answer/${token}`}
-            aria-disabled={isDeadlinePassed}
-            tabIndex={isDeadlinePassed ? -1 : 0}
-          >
-            Answer
-          </Link>
-        </Button>
-        {isDeadlinePassed && (
-          <p className="text-xs text-muted-foreground">
-            ※締め切りを過ぎているため回答できません。
-          </p>
-        )}
-        <InvitationShareDialog token={token} defaultOpen={isShareOpen} />
-      </div> */}
     </div>
   )
 }

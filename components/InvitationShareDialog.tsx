@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import ShareCard from "@/components/ShareCard"
+import { QrCode } from "lucide-react"
 
 type InvitationShareDialogProps = {
   token: string
@@ -24,7 +25,9 @@ const InvitationShareDialog = ({ token, defaultOpen = false }: InvitationShareDi
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>共有</Button>
+        <Button variant="outline" className="size-11 rounded-full border border-gray-300 hover:bg-gray-50" size="icon">
+            <QrCode className="size-4" />
+          </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>

@@ -1,23 +1,24 @@
 "use client"
 
+import { useMemo, useState } from "react"
 import Link from "next/link"
-import DateCandidateSummaryList from "@/components/DateCandidateSummaryList"
 import InvitationShareDialog from "@/components/InvitationShareDialog"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import type { InvitationDraft, Participant } from "@/app/types/type"
 import {
-  CalendarClock,
-  CircleDollarSign,
-  Clock3,
-  MapPin,
+  CalendarCheck2,
+  ChartNoAxesColumn,
+  CheckCircle2,
+  Clock,
+  DollarSign,
+  MapPinCheck,
   MessageSquareText,
-  VerifiedIcon,
 } from "lucide-react"
-import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar"
-import { ReactNode } from "react"
+import DateCandidateSummaryList from "./DateCandidateSummaryList"
 
 type RankingItem = {
   date: string
@@ -69,11 +70,11 @@ type Props = {
   isShareOpen: boolean
 }
 
-function formatDeadline(deadline?: string) {
+function formatDateTime(deadline?: string) {
   if (!deadline) return "期限なし"
 
   return new Date(deadline).toLocaleString("ja-JP", {
-    month: "numeric",
+    month: "short",
     day: "numeric",
     weekday: "short",
     hour: "2-digit",
@@ -100,47 +101,6 @@ function getRemainingDays(deadline?: string) {
   )
 }
 
-function SectionCard({ title, subtitle, children }: { title: string; subtitle?: string; children: ReactNode }) {
-  return (
-    <Card className="space-y-4 rounded-2xl p-5 shadow-sm">
-      <div>
-        <h2 className="text-base font-semibold">{title}</h2>
-        {subtitle ? <p className="text-sm text-muted-foreground">{subtitle}</p> : null}
-      </div>
-      {children}
-    </Card>
-  )
-}
-
-function OverviewItem({
-  icon,
-  label,
-  value,
-}: {
-  icon: ReactNode
-  label: string
-  value: string
-}) {
-  return (
-    <div className="rounded-xl border bg-background p-3">
-      <div className="flex items-center gap-2 text-xs text-muted-foreground">
-        {icon}
-        <span>{label}</span>
-      </div>
-      <p className="mt-2 text-sm font-medium leading-relaxed">{value}</p>
-    </div>
-  )
-}
-
-function CandidateScore({ label, value }: { label: string; value: number }) {
-  return (
-    <div className="rounded-xl border p-3 text-center">
-      <p className="text-xs text-muted-foreground">{label}</p>
-      <p className="mt-1 text-lg font-semibold">{value}</p>
-    </div>
-  )
-}
-
 export default function InvitationMobileDashboard({
   token,
   invitation,
@@ -152,170 +112,217 @@ export default function InvitationMobileDashboard({
   isDeadlinePassed,
   isShareOpen,
 }: Props) {
-  const topCandidate = rankingData[0]
-  const nextCandidates = rankingData.slice(1, 3)
+  const [activeTab, setActiveTab] = useState("overview")
+
   const organizer = participants.find((participant) => participant.role === "organizer")
+  const rankingByScore = useMemo(() => [...rankingData].sort((a, b) => b.score - a.score), [rankingData])
+  const topCandidate = rankingByScore[0]
+
+  const participantLabels = useMemo(() => {
+    const names = participants.map((participant) => participant.name)
+    return names.slice(0, 11)
+  }, [participants])
+
+  const overflowCount = Math.max(0, participants.length - participantLabels.length)
   const remainingDays = getRemainingDays(invitation.settings.deadline)
 
   return (
-    <Tabs defaultValue="overview" className="pb-28">
-      <TabsContent value="overview" className="mt-0 space-y-4">
-          <Card className="space-y-4 rounded-2xl p-5 shadow-sm">
-            <div className="flex items-center justify-between gap-3">
-              <h1 className="text-2xl font-bold leading-tight">{invitation.title || "イベントタイトル未設定"}</h1>
-              <Badge variant="outline">{remainingDays != null ? `残り${remainingDays}日` : "期限なし"}</Badge>
+    <Tabs value={activeTab} onValueChange={setActiveTab} className="min-h-screen bg-gray-50 pb-32">
+      <div className="sticky top-0 z-50 border-b border-gray-200 bg-white">
+        <TabsList className="grid h-12 w-full grid-cols-2 rounded-none bg-transparent p-0">
+          <TabsTrigger
+            value="overview"
+            className="h-full rounded-none data-[state=active]:border-b-2 data-[state=active]:border-red-500 data-[state=active]:bg-transparent data-[state=active]:text-red-500 data-[state=active]:shadow-none"
+          >
+            overview
+          </TabsTrigger>
+          <TabsTrigger
+            value="responses"
+            className="h-full rounded-none data-[state=active]:border-b-2 data-[state=active]:border-red-500 data-[state=active]:bg-transparent data-[state=active]:text-red-500 data-[state=active]:shadow-none"
+          >
+            responses
+          </TabsTrigger>
+        </TabsList>
+      </div>
+
+      <TabsContent value="overview" className="mt-0 space-y-0">
+        <div className="bg-white">
+          <div className="px-5 pb-4 pt-6">
+            <div className="mb-4 flex size-16 items-center justify-center rounded-2xl shadow-sm">
+              <span className="text-3xl">☺</span>
+            </div>
+
+            <div className="mb-2 flex items-center justify-between gap-2">
+              <h1 className="text-2xl font-semibold leading-tight">{invitation.title || "イベントタイトル未設定"}</h1>
+              <Badge variant="outline" className="shrink-0">
+                {remainingDays != null ? `残り${remainingDays}日` : "期限なし"}
+              </Badge>
+            </div>
+
+            {organizer ? (
+              <div className="mb-4 flex items-center gap-2">
+                {/* <Avatar className="size-6 border border-gray-200">
+                  <AvatarImage src={organizer.avatar} alt={organizer.name} />
+                  <AvatarFallback className="bg-gray-100 text-xs text-gray-600">{organizer.name.slice(0, 1)}</AvatarFallback>
+                </Avatar> */}
+                <p className="text-sm text-gray-600">by {organizer.name}</p>
+              </div>
+            ) : null}
+
+            <p className="text-sm leading-relaxed text-gray-600">
+              {invitation.description?.trim() || "参加者へのメッセージはまだありません。"}
+            </p>
           </div>
-          {organizer ? (
-            <div className="flex items-center gap-3 rounded-xl border p-3">
-              <div className="relative w-fit">
-                <Avatar>
-                  <AvatarImage alt={organizer.name} src={organizer.avatar} />
-                  <AvatarFallback>{organizer.name.slice(0, 1)}</AvatarFallback>
-                </Avatar>
-                <span className="absolute -right-1 -bottom-1 flex size-4 items-center justify-center rounded-full bg-background">
-                  <VerifiedIcon className="size-full fill-blue-500 text-white" />
-                </span>
-              </div>
-              <div>
-                <p className="text-xs text-muted-foreground">主催者</p>
-                <p className="text-sm font-semibold">{organizer.name}</p>
-              </div>
-            </div>
-          ) : null}
-        
-          <p className="text-sm text-muted-foreground leading-relaxed">
-            {invitation.description?.trim() || "参加者へのメッセージはまだありません。"}
-          </p>
-        </Card>
-          <SectionCard title="招待の概要" subtitle={`回答 ${responsesCount} 件`}>
-            <div className="grid grid-cols-2 gap-3">
-              <OverviewItem
-                icon={<CalendarClock className="size-4" />}
-                label="締め切り"
-                value={formatDeadline(invitation.settings.deadline)}
-              />
-              <OverviewItem
-                icon={<Clock3 className="size-4" />}
-                label="基本時刻"
-                value={formatTimeRange(invitation.startTime, invitation.endTime)}
-              />
-              <OverviewItem icon={<MapPin className="size-4" />} label="場所" value={invitation.location || "未設定"} />
-              <OverviewItem
-                icon={<CircleDollarSign className="size-4" />}
-                label="予算"
-                value={formatBudget(invitation.budget)}
-              />
-            </div>
-          </SectionCard>
-          <SectionCard title="有力な候補日" subtitle="上位候補を比較できます。">
-          {topCandidate ? (
-            <div className="rounded-xl border p-4">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <p className="text-xs text-muted-foreground">1位</p>
-                  <p className="mt-1 text-lg font-semibold">{topCandidate.date}</p>
-                  <p className="mt-1 text-sm text-muted-foreground">{topCandidate.timeLabel || "時刻未設定"}</p>
-                </div>
-                <Badge>Best</Badge>
-              </div>
-              <div className="mt-4 grid grid-cols-3 gap-2">
-                <CandidateScore label="Yes" value={topCandidate.yes} />
-                <CandidateScore label="Maybe" value={topCandidate.maybe} />
-                <CandidateScore label="No" value={topCandidate.no} />
-              </div>
-            </div>
-          ) : (
-            <p className="text-sm text-muted-foreground">候補日がまだありません。</p>
-          )}
 
-          {nextCandidates.length > 0 ? (
-            <div className="space-y-2">
-              {nextCandidates.map((item, index) => (
-                <div
-                  key={`${item.date}-${index}`}
-                  className="flex items-center justify-between rounded-xl border px-4 py-3"
-                >
-                  <div>
-                    <p className="text-sm font-medium">{index + 2}位: {item.date}</p>
-                    <p className="text-xs text-muted-foreground">{item.timeLabel || "時刻未設定"}</p>
-                  </div>
-                  <div className="text-right text-xs text-muted-foreground">
-                    <p>Yes {item.yes}</p>
-                    <p>Maybe {item.maybe}</p>
-                  </div>
-                </div>
-              ))}
+          <div className="flex items-center gap-4 px-5 pb-5 text-sm">
+            <div className="flex items-center gap-1.5 text-gray-600">
+              <Clock className="size-4" />
+              <span>{formatTimeRange(invitation.startTime, invitation.endTime)}</span>
             </div>
-        ) : null}
-        </SectionCard>
+            <div className="flex items-center gap-1.5 text-gray-600">
+              <DollarSign className="size-4" />
+              <span>{formatBudget(invitation.budget)}</span>
+            </div>
+            
+          </div>
+        </div>
 
-        <SectionCard title="参加判断に必要な情報">
-          <div>
-            <p className="text-xs font-medium text-muted-foreground">条件タグ</p>
+        <div className="mb-6 px-5 bg-white">
+          <div className="flex flex-wrap gap-2">
             {invitation.tags.length > 0 ? (
-              <div className="mt-2 flex flex-wrap gap-2">
-                {invitation.tags.map((tag) => (
-                  <Badge key={tag.id} variant="secondary" className="rounded-full px-3 py-1">
-                    {tag.label}
-                  </Badge>
-                ))}
-              </div>
+              invitation.tags.map((tag) => (
+                <Badge
+                  key={tag.id}
+                  className="rounded-full border  bg-gray-50 px-2.5 py-1 text-xs font-normal text-gray-700"
+                >
+                  <CheckCircle2 className="mr-1 size-3" />
+                  {tag.label}
+                </Badge>
+              ))
             ) : (
-              <p className="mt-2 text-sm text-muted-foreground">タグは設定されていません。</p>
+              <Badge className="rounded-full border  bg-gray-50 px-2.5 py-1 text-xs font-normal text-gray-700">
+                <CheckCircle2 className="mr-1 size-3" />
+                参加条件なし
+              </Badge>
             )}
           </div>
-        </SectionCard>
-      </TabsContent>
+        </div>
 
-      <TabsContent value="responses" className="mt-0 space-y-4">
-        <DateCandidateSummaryList items={candidateSummaries} />
+        <div className="space-y-3 px-5 py-6">
+          <Card className="border-0 shadow-sm">
+            <CardContent className="p-4">
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex-1">
+                  <div className="mb-1 flex items-center gap-2">
+                    <CalendarCheck2 className="size-4" />
+                    <p className="text-xs opacity-90">Best Date</p>
+                  </div>
+                  <p className="text-lg font-semibold">{topCandidate?.date || "候補日未設定"}</p>
+                  <p className="text-xs opacity-90">{topCandidate?.timeLabel || formatTimeRange(invitation.startTime, invitation.endTime)}</p>
+                  <div className="mt-2 flex items-center gap-3 text-xs opacity-90">
+                    <span>Yes {topCandidate?.yes ?? 0}</span>
+                    <span>Maybe {topCandidate?.maybe ?? 0}</span>
+                    <span>No {topCandidate?.no ?? 0}</span>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="text-2xl font-light opacity-90">{topCandidate?.yes ?? 0}</div>
+                <div className="text-xs opacity-75">available</div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
-        <Card className="space-y-3 rounded-2xl p-5 shadow-sm">
-          <div className="flex items-center gap-2">
-            <MessageSquareText className="size-4 text-violet-500" />
-            <h2 className="text-base font-semibold">コメント ({commentResponses.length})</h2>
+          <Card className="border border-gray-200 bg-white shadow-none">
+            <CardContent className="p-4">
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex-1">
+                  <div className="mb-1 flex items-center gap-2">
+                    <MapPinCheck className="size-4 text-gray-700" />
+                    <p className="text-xs text-gray-600">Best Location</p>
+                  </div>
+                  <p className="text-lg font-semibold">{invitation.location || "未設定"}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="mb-6 px-5">
+          <Card className="border border-gray-200 bg-white shadow-none">
+            <CardContent className="p-4">
+              <div className="mb-3 flex items-center gap-2">
+                <MessageSquareText className="size-4 text-gray-700" />
+                <p className="text-xs text-gray-600">Comment</p>
+                <span className="text-xs text-gray-500">({commentResponses.length})</span>
+              </div>
+              {commentResponses.length === 0 ? (
+                <p className="text-sm text-gray-500">コメントはまだありません。</p>
+              ) : (
+                <ul className="space-y-2">
+                  {commentResponses.slice(0, 3).map((response) => (
+                    <li key={response.id} className="rounded-lg border border-gray-200 bg-gray-50 px-3 py-2">
+                      {response.name ? <p className="text-xs text-gray-500">{response.name}</p> : null}
+                      <p className="text-sm text-gray-700 line-clamp-2">{response.comment}</p>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="mb-6 px-5">
+          <div className="mb-3 flex items-center justify-between">
+            <h3 className="text-sm text-gray-700">Who&apos;s answering</h3>
+            <div className="flex items-center gap-1.5 text-xs text-gray-600">
+              <ChartNoAxesColumn className="size-4" />
+              <span>{responsesCount} responses</span>
+            </div>
           </div>
-          {commentResponses.length === 0 ? (
-            <p className="text-sm text-muted-foreground">コメントはまだありません。</p>
-          ) : (
-            <ul className="space-y-2">
-              {commentResponses.map((response) => (
-                <li key={response.id} className="rounded-xl border p-3">
-                  {response.name ? <p className="text-xs text-muted-foreground">{response.name}</p> : null}
-                  <p className="mt-1 text-sm whitespace-pre-wrap">{response.comment}</p>
-                </li>
-              ))}
-            </ul>
-          )}
-        </Card>
+          <div className="flex flex-wrap gap-2">
+            {participantLabels.map((name, idx) => (
+              <Badge
+                key={`${name}-${idx}`}
+                className="rounded-full border border-gray-200 bg-white px-3 py-1.5 text-xs font-normal text-gray-700 hover:bg-gray-50"
+              >
+                {name}
+              </Badge>
+            ))}
+            {overflowCount > 0 ? (
+              <Badge className="rounded-full border border-gray-200 bg-white px-3 py-1.5 text-xs font-normal text-gray-700 hover:bg-gray-50">
+                +{overflowCount} more
+              </Badge>
+            ) : null}
+          </div>
+        </div>
       </TabsContent>
 
-      <div className="fixed inset-x-0 bottom-0 z-30 mx-auto w-full max-w-md border-t bg-background/95 px-4 pb-[calc(env(safe-area-inset-bottom)+1rem)] pt-3 backdrop-blur supports-backdrop-filter:bg-background/80">
-        <div className="space-y-3">
-          <Button asChild className="h-11 w-full rounded-2xl" disabled={isDeadlinePassed}>
+      <TabsContent value="responses" className="mt-0 space-y-4 px-5 py-5">
+        <DateCandidateSummaryList items={candidateSummaries} />
+      </TabsContent>
+
+      <div className="fixed bottom-0 left-0 right-0 border-none border-gray-200 bg-white px-5 pb-6 pt-4">
+        <div className="flex items-center justify-center gap-3">
+          <Button
+            asChild
+            size="lg"
+            className="h-12 w-2xs rounded-full bg-red-500 text-white shadow-sm hover:bg-red-600"
+            disabled={isDeadlinePassed}
+          >
             <Link
               href={isDeadlinePassed ? "#" : `/answer/${token}`}
               aria-disabled={isDeadlinePassed}
               tabIndex={isDeadlinePassed ? -1 : 0}
             >
-              回答する
+              Answer
             </Link>
           </Button>
-          {isDeadlinePassed ? (
-            <p className="text-center text-xs text-muted-foreground">※締め切りを過ぎているため回答できません。</p>
-          ) : null}
-          <div className="flex items-center gap-2">
-            <TabsList className="grid h-12 w-full grid-cols-2 rounded-2xl p-1">
-              <TabsTrigger value="overview" className="rounded-xl">
-                概要
-              </TabsTrigger>
-              <TabsTrigger value="responses" className="rounded-xl">
-                回答状況
-              </TabsTrigger>
-            </TabsList>
-            <InvitationShareDialog token={token} defaultOpen={isShareOpen} />
-          </div>
+          <InvitationShareDialog token={token} defaultOpen={isShareOpen} />
         </div>
+        {isDeadlinePassed ? (
+          <p className="pt-2 text-center text-xs text-muted-foreground">※締め切りを過ぎているため回答できません。</p>
+        ) : null}
       </div>
     </Tabs>
   )

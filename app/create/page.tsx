@@ -5,13 +5,14 @@ import { useState } from "react"
 import TagSection from "@/components/TagSection"
 import DateCandidateSection from "@/components/DateCandidateSection"
 import SettingSection from "@/components/SettingSection"
-import { InvitationDraft, Participant, Tag } from "@/app/types/type"
-import InvitationHeroCard from "@/components/HeroCard"
+import { InvitationDraft, Tag } from "@/app/types/type"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { useRouter } from "next/navigation"
+import { Card } from "@/components/ui/card"
+import { Badge } from "lucide-react"
 
 const CreateInvitationPage = () => {
   const router = useRouter()
@@ -31,15 +32,6 @@ const CreateInvitationPage = () => {
       deadline: undefined,
     },
   })
-
-  const participants: Participant[] = draft.creatorName
-    ? [
-        {
-          id: "organizer",
-          name: draft.creatorName,
-          role: "organizer",
-        },
-    ] : []
 
   const createInvitation = async () => {
     const sortedDateCandidates = [...draft.dateCandidates].sort(
@@ -234,11 +226,9 @@ const CreateInvitationPage = () => {
               この内容で招待カードを作成しますか？
             </DialogDescription>
           </DialogHeader>
-          <InvitationHeroCard
-            draft={draft}
-            participants={participants}
-            heroImageUrl={undefined}
-          />
+          <Card className="overflow-hidden rounded-3x p-5 shadow-lg">
+
+          </Card>
           <DialogFooter>
             <Button
               type="submit"

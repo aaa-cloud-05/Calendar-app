@@ -1,12 +1,5 @@
 import { notFound } from "next/navigation"
-// import InvitationHeroCard from "@/components/HeroCard"
 import { getInvitationDraft, getInvitationResponses } from "./actions"
-// import Link from "next/link"
-// import ResponseStatusChart from "@/components/ResponseStatusChart"
-// import DateCandidateRanking from "@/components/DateCandidateRanking"
-// import DateCandidateSummaryList from "@/components/DateCandidateSummaryList"
-// import InvitationShareDialog from "@/components/InvitationShareDialog"
-// import { Button } from "@/components/ui/button"
 import InvitationRecentTracker from "@/components/InvitationRecentTracker"
 import InvitationMobileDashboard from "@/components/InvitationMobileDashboard"
 

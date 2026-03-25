@@ -1,7 +1,6 @@
 "use client"
 
 import Link from "next/link"
-import InvitationHeroCard from "@/components/HeroCard"
 import DateCandidateSummaryList from "@/components/DateCandidateSummaryList"
 import InvitationShareDialog from "@/components/InvitationShareDialog"
 import { Badge } from "@/components/ui/badge"
@@ -17,7 +16,9 @@ import {
   MessageSquareText,
   Sparkles,
   Users,
+  VerifiedIcon,
 } from "lucide-react"
+import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar"
 
 type RankingItem = {
   date: string
@@ -91,6 +92,15 @@ function formatTimeRange(startTime?: string, endTime?: string) {
   return startTime || endTime || "未設定"
 }
 
+function getRemainingDays(deadline?: string) {
+  if (!deadline) return null
+
+  return Math.max(
+    0,
+    Math.ceil((new Date(deadline).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+  )
+}
+
 export default function InvitationMobileDashboard({
   token,
   invitation,
@@ -104,11 +114,42 @@ export default function InvitationMobileDashboard({
 }: Props) {
   const topCandidate = rankingData[0]
   const nextCandidates = rankingData.slice(1, 3)
+  const organizer = participants.find((participant) => participant.role === "organizer")
+  const remainingDays = getRemainingDays(invitation.settings.deadline)
 
   return (
     <Tabs defaultValue="overview" className="pb-28">
       <TabsContent value="overview" className="mt-0 space-y-4">
-        <InvitationHeroCard draft={invitation} participants={participants} />
+        <Card className="overflow-hidden rounded-3xl border-none bg-liner-to-br from-orange-400 via-rose-400 to-red-500 p-5 text-white shadow-lg">
+          <div className="flex items-start justify-between gap-3">
+            <Badge className="border-white/20 bg-black/20 text-white hover:bg-black/20">
+              {remainingDays != null ? `残り${remainingDays}日` : "期限なし"}
+            </Badge>
+          </div>
+          <div className="mt-4">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/80">Invite</p>
+            <h1 className="mt-2 text-2xl font-extrabold leading-tight tracking-tight">
+              {invitation.title || "イベントタイトル未設定"}
+            </h1>
+          </div>
+          {organizer ? (
+            <div className="mt-5 flex items-center gap-3 rounded-2xl bg-black/15 p-3">
+              <div className="relative w-fit">
+                <Avatar>
+                  <AvatarImage alt={organizer.name} src={organizer.avatar} />
+                  <AvatarFallback>{organizer.name.slice(0, 1)}</AvatarFallback>
+                </Avatar>
+                <span className="-bottom-1 -right-1 absolute flex size-4 items-center justify-center rounded-full bg-background">
+                  <VerifiedIcon className="size-full fill-blue-500 text-white" />
+                </span>
+              </div>
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-wide text-white/70">Organizer</p>
+                <p className="text-sm font-bold">{organizer.name}</p>
+              </div>
+            </div>
+          ) : null}
+        </Card>
 
         <Card className="space-y-4 rounded-3xl border-none bg-blue-400 p-5 text-white shadow-lg">
           <div className="flex items-start justify-between gap-3">

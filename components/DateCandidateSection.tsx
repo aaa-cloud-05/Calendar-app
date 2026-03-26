@@ -43,7 +43,7 @@ const DateCandidateSection = ({ dateCandidates, onChange }: Props) => {
   return (
     <section className="space-y-4">
       <label className="text-[11px] font-extrabold text-muted-foreground uppercase tracking-widest ml-1">
-        日程候補
+        日程候補 <span className="text-red-500">*</span>
       </label>
 
       <div className="p-4 rounded-xl bg-card border border-border shadow-sm space-y-4">

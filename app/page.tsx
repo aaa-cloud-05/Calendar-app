@@ -8,6 +8,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { FormEvent, useEffect, useState } from 'react'
 import { readRecentInvitations, RecentInvitation } from './utils/recentInvitations'
+import { Skeleton } from '@/components/ui/skeleton'
 
 const Page = () => {
   const router = useRouter()
@@ -101,7 +102,16 @@ const Page = () => {
             <h2 className="text-sm font-semibold text-zinc-700">過去に閲覧した招待</h2>
           </div>
 
-          {recentInvitations && recentInvitations.length > 0 ? (
+          {recentInvitations === null ? (
+            <div className="grid gap-3 sm:grid-cols-2">
+              {Array.from({ length: 2 }).map((_, index) => (
+                <Card key={index} className="border-zinc-200/80 p-4 shadow-sm">
+                  <Skeleton className="h-4 w-2/3 bg-zinc-200" />
+                  <Skeleton className="mt-2 h-3 w-full bg-zinc-100" />
+                </Card>
+              ))}
+            </div>
+          ) : recentInvitations.length > 0 ? (
             <div className="grid gap-3 sm:grid-cols-2">
               {recentInvitations.map((item) => (
                 <Link key={item.token} href={`/invitation/${encodeURIComponent(item.token)}`}>

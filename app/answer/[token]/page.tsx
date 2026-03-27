@@ -1,5 +1,8 @@
 import AnswerScreen from "@/components/AnswerScreen"
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { supabaseServer } from "@/lib/supabase/server"
+import { Link } from "lucide-react";
 
 export default async function AnswerPage({
   params,
@@ -16,7 +19,19 @@ export default async function AnswerPage({
     .single()
   
   if (!invitation) {
-    return <div>Not found</div>
+    return (
+      <div className="max-w-md mx-auto p-4 py-10">
+        <Card className="p-6 text-center space-y-3">
+          <h1 className="text-lg font-semibold text-zinc-900">招待が見つかりませんでした</h1>
+          <p className="text-sm text-zinc-600">
+            URLが誤っているか、招待が削除されている可能性があります。
+          </p>
+          <Button asChild className="mt-2">
+            <Link href="/">トップに戻る</Link>
+          </Button>
+        </Card>
+      </div>
+    )
   }
 
   const isDeadlinePassed = invitation.settings?.deadline

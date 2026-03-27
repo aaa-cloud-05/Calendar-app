@@ -3,7 +3,6 @@
 import { useMemo, useState } from "react"
 import Link from "next/link"
 import InvitationShareDialog from "@/components/InvitationShareDialog"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -68,18 +67,6 @@ type Props = {
   responsesCount: number
   isDeadlinePassed: boolean
   isShareOpen: boolean
-}
-
-function formatDateTime(deadline?: string) {
-  if (!deadline) return "期限なし"
-
-  return new Date(deadline).toLocaleString("ja-JP", {
-    month: "short",
-    day: "numeric",
-    weekday: "short",
-    hour: "2-digit",
-    minute: "2-digit",
-  })
 }
 
 function formatBudget(budget?: number) {
@@ -161,10 +148,6 @@ export default function InvitationMobileDashboard({
 
             {organizer ? (
               <div className="mb-4 flex items-center gap-2">
-                {/* <Avatar className="size-6 border border-gray-200">
-                  <AvatarImage src={organizer.avatar} alt={organizer.name} />
-                  <AvatarFallback className="bg-gray-100 text-xs text-gray-600">{organizer.name.slice(0, 1)}</AvatarFallback>
-                </Avatar> */}
                 <p className="text-sm text-gray-600">by {organizer.name}</p>
               </div>
             ) : null}

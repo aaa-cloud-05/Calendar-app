@@ -1,7 +1,6 @@
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { CalendarDays, Clock3, MessageSquareText, Tags } from "lucide-react"
 
 type Responder = {
@@ -60,10 +59,6 @@ const STATUS_META = [
 
 function getStatusMeta(status: Responder["status"]) {
   return STATUS_META.find((item) => item.key === status) ?? STATUS_META[1]
-}
-
-function getInitials(name: string) {
-  return name.trim().slice(0, 2) || "?"
 }
 
 export default function DateCandidateSummaryList({ items }: Props) {

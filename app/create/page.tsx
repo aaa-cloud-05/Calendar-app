@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { ArrowLeft, Clock, DollarSign, MapPin, MessageSquare, Plus, UserRound } from "lucide-react"
+import { ArrowLeft, Clock, DollarSign, MapPin, MessageSquare, UserRound } from "lucide-react"
 
 import TagSection from "@/components/TagSection"
 import DateCandidateSection from "@/components/DateCandidateSection"
@@ -14,10 +14,14 @@ import { Textarea } from "@/components/ui/textarea"
 import { useRouter } from "next/navigation"
 import { Card } from "@/components/ui/card"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import { Spinner } from "@/components/ui/spinner"
 
 const CreateInvitationPage = () => {
   const router = useRouter()
   const [showOptionalFields, setShowOptionalFields] = useState(false)
+  const [isCreating, setIsCreating] = useState(false)
+  const [isNavigating, setIsNavigating] = useState(false)
+  const [createError, setCreateError] = useState("")
   const [draft, setDraft] = useState<InvitationDraft>({
     creatorName: "",
     title: "",
@@ -36,6 +40,11 @@ const CreateInvitationPage = () => {
   })
 
   const createInvitation = async () => {
+    if (isCreating || isNavigating) return
+
+    setIsCreating(true)
+    setCreateError("")
+
     const sortedDateCandidates = [...draft.dateCandidates].sort(
       (a, b) => a.date.getTime() - b.date.getTime()
     )
@@ -48,21 +57,34 @@ const CreateInvitationPage = () => {
       })),
     }
 
-    const res = await fetch("/api/invitation", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    })
-    
-    if (!res.ok) return
+    try {
+      const res = await fetch("/api/invitation", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      })
+      
+      if (!res.ok) {
+        setCreateError("作成に失敗しました。時間をおいて再度お試しください。")
+        return
+      }
 
-    const data = await res.json()
+      const data = await res.json()
 
-    if (!data.inviteToken) return
+      if (!data.inviteToken) {
+        setCreateError("作成に失敗しました。時間をおいて再度お試しください。")
+        return
+      }
 
-    router.push(`/invitation/${data.inviteToken}?share=1`)
+      setIsNavigating(true)
+      router.push(`/invitation/${data.inviteToken}?share=1`)
+    } catch {
+      setCreateError("作成に失敗しました。時間をおいて再度お試しください。")
+    } finally {
+      setIsCreating(false)
+    }
   }
 
   /* ===== タグ ===== */
@@ -296,9 +318,16 @@ const CreateInvitationPage = () => {
             <DialogTrigger asChild>
               <Button
                 className="w-full h-12 rounded-full bg-red-500 hover:bg-red-600 text-white disabled:bg-gray-300 disabled:text-gray-500"
-                disabled={!draft.title || draft.dateCandidates.length === 0}
+                disabled={!draft.title || draft.dateCandidates.length === 0 || isCreating}
               >
-                作成内容を確認
+                {isCreating ? (
+                  <span className="inline-flex items-center gap-2">
+                    <Spinner className="size-4" />
+                    作成中...
+                  </span>
+                ) : (
+                  "作成内容を確認"
+                )}
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-md">
@@ -313,12 +342,23 @@ const CreateInvitationPage = () => {
                 <Button
                   type="submit"
                   onClick={createInvitation}
+                  disabled={isCreating || isNavigating}
                 >
-                  作成する
+                  {isCreating ? (
+                    <span className="inline-flex items-center gap-2">
+                      <Spinner className="size-4" />
+                      作成中...
+                    </span>
+                  ) : (
+                    "作成する"
+                  )}
                 </Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
+          {createError && (
+            <p className="text-xs text-center text-red-500 mt-3">{createError}</p>
+          )}
           <p className="text-xs text-center text-gray-500 mt-3">
             {!draft.title || draft.dateCandidates.length === 0
               ? "必須項目を入力してください"
@@ -326,6 +366,14 @@ const CreateInvitationPage = () => {
           </p>
         </div>
       </div>
+
+      {isNavigating && (
+        <div className="fixed inset-0 z-60 bg-white/90 backdrop-blur-sm">
+          <div className="h-full w-full flex flex-col items-center justify-center gap-3 text-gray-700">
+            <Spinner className="size-6" />
+          </div>
+        </div>
+      )}
     </div>
   )
 }

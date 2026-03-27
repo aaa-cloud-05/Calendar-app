@@ -7,6 +7,8 @@ import { Button } from './ui/button'
 import { Input } from './ui/input'
 import { DateCandidate, ResponseDraft, Tag } from '@/app/types/type'
 import { submitResponse } from '@/app/answer/[token]/action'
+import { Spinner } from './ui/spinner'
+import { useRouter } from 'next/navigation'
 
 type InvitationPayload = {
   id: string
@@ -38,7 +40,10 @@ const AnswerScreen = ({
   invitation: InvitationPayload
   initialDeadlinePassed: boolean
 }) => {
+  const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isNavigating, setIsNavigating] = useState(false)
+  const [submitError, setSubmitError] = useState("")
   const anonymousResponseEnabled = invitation.settings?.anonymousResponse ?? false
   const allowComments = invitation.settings?.allowComments ?? true
   const isDeadlinePassed = initialDeadlinePassed
@@ -67,11 +72,12 @@ const AnswerScreen = ({
   }, [response.availability])
 
   const handleSubmit = async () => {
-    if (isSubmitting || isDeadlinePassed) return
+    if (isSubmitting || isNavigating || isDeadlinePassed) return
 
     const guestId = getOrCreateGuestId()
 
     setIsSubmitting(true)
+    setSubmitError("")
 
     try {
       await submitResponse(invitation.invite_token, {
@@ -82,8 +88,11 @@ const AnswerScreen = ({
         selectedTags,
         comment: response.comment,
       })
+      setIsNavigating(true)
+      router.push(`/invitation/${invitation.invite_token}`)
     } catch (e) {
       console.error(e)
+      setSubmitError("送信に失敗しました。時間をおいて再度お試しください。")
     } finally {
       setIsSubmitting(false)
     }
@@ -126,9 +135,19 @@ const AnswerScreen = ({
           }))
         }
       />
-      <Button onClick={handleSubmit} disabled={isSubmitting || isDeadlinePassed}>
-        {isSubmitting ? "Sending..." : "Send Answer"}
+      <Button onClick={handleSubmit} disabled={isSubmitting || isNavigating || isDeadlinePassed}>
+        {isSubmitting ? (
+          <span className="inline-flex items-center gap-2">
+            <Spinner className="size-4" />
+            Sending...
+          </span>
+        ) : "Send Answer"}
       </Button>
+      {submitError && (
+        <p className="mt-2 text-xs text-red-500">
+          {submitError}
+        </p>
+      )}
 
       {isDeadlinePassed && (
         <p className="mt-2 text-xs text-muted-foreground">
@@ -139,6 +158,15 @@ const AnswerScreen = ({
       {/* <pre className="text-xs bg-muted p-3 rounded-lg">
         {JSON.stringify(response, null, 2)}
       </pre> */}
+
+      {isNavigating && (
+        <div className="fixed inset-0 z-60 bg-white/90 backdrop-blur-sm">
+          <div className="h-full w-full flex flex-col items-center justify-center gap-3 text-gray-700">
+            <Spinner className="size-6" />
+            <p className="text-sm">回答を反映中...</p>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

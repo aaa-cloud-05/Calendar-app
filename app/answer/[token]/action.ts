@@ -1,6 +1,6 @@
 "use server"
 
-import { supabaseServer } from "@/lib/supabase/server"
+import { supabaseService } from "@/lib/supabase/service"
 import { revalidatePath } from "next/cache"
 import { DateResponse, Tag } from "@/app/types/type"
 
@@ -14,7 +14,7 @@ type SubmitPayload = {
 }
 
 export async function submitResponse(token: string, payload: SubmitPayload) {
-  const supabase = await supabaseServer()
+  const supabase = supabaseService()
 
   const { error } = await supabase
     .from("responses")
@@ -31,7 +31,7 @@ export async function submitResponse(token: string, payload: SubmitPayload) {
     )
 
   if (error) {
-    console.error(error)
+    console.error("[submitResponse]", error.message, error)
     throw new Error("Failed to submit response")
   }
 

@@ -1,4 +1,4 @@
-import { supabaseServer } from "@/lib/supabase/server"
+import { supabaseService } from "@/lib/supabase/service"
 import { InvitationDraft } from "@/app/types/type"
 
 export type InvitationResponse = {
@@ -15,7 +15,7 @@ export type InvitationResponse = {
 export async function getInvitationDraft(
   token: string
 ): Promise<(InvitationDraft & { id: string }) | null> {
-  const supabase = await supabaseServer()
+  const supabase = supabaseService()
 
   const { data, error } = await supabase
     .from("invitations")
@@ -46,7 +46,7 @@ export async function getInvitationDraft(
 export async function getInvitationResponses(
   invitationId: string
 ): Promise<InvitationResponse[]> {
-  const supabase = await supabaseServer()
+  const supabase = supabaseService()
 
   const { data, error } = await supabase
     .from("responses")

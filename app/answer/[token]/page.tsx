@@ -1,8 +1,8 @@
 import AnswerScreen from "@/components/AnswerScreen"
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { supabaseServer } from "@/lib/supabase/server"
-import { Link } from "lucide-react";
+import { supabaseService } from "@/lib/supabase/service"
+import Link from "next/link";
 
 export default async function AnswerPage({
   params,
@@ -11,7 +11,7 @@ export default async function AnswerPage({
 }) {
   const { token } = await params
 
-  const supabase = await supabaseServer();
+  const supabase = supabaseService();
   const { data: invitation } = await supabase
     .from("invitations")
     .select("*")

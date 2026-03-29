@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
+import AppShell from "@/components/AppShell";
 import Link from "next/link";
 import "./globals.css";
 
@@ -32,17 +33,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen`}
       >
-        <header className="border-b border-zinc-200 bg-white">
-          <div className="mx-auto max-w-3xl px-5 py-4">
-            <Link
-              href="/"
-              className="inline-block text-base font-semibold text-zinc-900 hover:text-zinc-700"
-            >
-              Quick Plan
-            </Link>
-          </div>
-        </header>
-        <div className="flex-1">{children}</div>
+        <AppShell>{children}</AppShell>
         <Toaster richColors position="top-center" />
         <footer className="border-t border-zinc-200 bg-white py-5">
           <nav

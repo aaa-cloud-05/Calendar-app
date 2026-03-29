@@ -19,7 +19,7 @@ import { toast } from "sonner"
 
 const CreateInvitationPage = () => {
   const router = useRouter()
-  const [showOptionalFields, setShowOptionalFields] = useState(false)
+  const [showOptionalFields, setShowOptionalFields] = useState(true)
   const [isCreating, setIsCreating] = useState(false)
   const [isNavigating, setIsNavigating] = useState(false)
   const [createError, setCreateError] = useState("")
@@ -35,7 +35,7 @@ const CreateInvitationPage = () => {
     dateCandidates: [],
     settings: {
       anonymousResponse: false,
-      allowComments: false,
+      allowComments: true,
       deadline: undefined,
     },
   })
@@ -142,22 +142,6 @@ const CreateInvitationPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 pb-28">
-      <div className="sticky top-0 z-50 bg-white border-b border-gray-200">
-        <div className="max-w-xl mx-auto flex items-center justify-between px-5 py-4">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-auto p-0 hover:bg-transparent"
-            onClick={() => router.back()}
-            aria-label="戻る"
-          >
-            <ArrowLeft className="size-5" />
-          </Button>
-          <h1 className="text-base font-medium">イベント作成</h1>
-          <div className="size-5" />
-        </div>
-      </div>
-
       <div className="max-w-xl mx-auto px-5 py-6 space-y-6">
         <div className="space-y-5">
           <p className="text-xs text-red-500">* 必須項目</p>

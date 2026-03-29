@@ -40,8 +40,10 @@ export default async function AnswerPage({
 
 
   return (
-    <div className="max-w-md mx-auto p-4 py-8">
-      <AnswerScreen invitation={invitation} initialDeadlinePassed={isDeadlinePassed} />
+    <div className="min-h-screen bg-gray-50 py-8">
+      <div className="mx-auto max-w-md px-4">
+        <AnswerScreen invitation={invitation} initialDeadlinePassed={isDeadlinePassed} />
+      </div>
 
       {/* <pre className="text-xs bg-muted p-3 rounded-lg">
         {JSON.stringify(invitation, null, 2)}

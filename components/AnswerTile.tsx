@@ -141,7 +141,7 @@ export default function AnswerTile({
         const candidateComment = candidate.comment?.trim()
 
         return (
-          <Card key={candidate.id} className="p-3 space-y-2">
+          <Card key={candidate.id} className="space-y-2 border border-gray-200 bg-white p-3 shadow-none">
 
             <div className="space-y-1">
               <div className="text-sm font-medium">{dateLabel}</div>
@@ -158,23 +158,26 @@ export default function AnswerTile({
             </div>
 
             {/* tabs */}
-            <Tabs value={status ?? ""}>
-              <TabsList className="grid grid-cols-3 w-full">
+            <Tabs value={status ?? "maybe"}>
+              <TabsList className="grid w-full grid-cols-3 bg-gray-100">
                 <TabsTrigger
                   value="yes"
                   onClick={() => setStatus(candidate.id, "yes")}
+                  className="data-[state=active]:bg-white data-[state=active]:text-emerald-600"
                 >
                   <Circle size={18}/>
                 </TabsTrigger>
                 <TabsTrigger
                   value="maybe"
                   onClick={() => setStatus(candidate.id, "maybe")}
+                  className="data-[state=active]:bg-white data-[state=active]:text-amber-600"
                 >
                   <Triangle size={18}/>
                 </TabsTrigger>
                 <TabsTrigger
                   value="no"
                   onClick={() => setStatus(candidate.id, "no")}
+                  className="data-[state=active]:bg-white data-[state=active]:text-rose-600"
                 >
                   <X size={18}/>
                 </TabsTrigger>

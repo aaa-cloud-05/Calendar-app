@@ -49,10 +49,15 @@ const AnswerScreen = ({
   const anonymousResponseEnabled = invitation.settings?.anonymousResponse ?? false
   const allowComments = invitation.settings?.allowComments ?? true
   const isDeadlinePassed = initialDeadlinePassed
+  const isNameRequired = !anonymousResponseEnabled
   const [response, setResponse] = useState<ResponseDraft>({
     invitationToken: invitation.invite_token,
     name: "",
-    availability: [],
+    availability: invitation.date_candidates.map((candidate) => ({
+      candidateId: candidate.id,
+      status: "maybe",
+      badges: [],
+    })),
     comment: "",
   })
 
@@ -60,6 +65,7 @@ const AnswerScreen = ({
     {id:"1", label: "オンラインで"},
     {id:"2", label: "遅刻"},
   ]
+  const trimmedName = response.name?.trim()
 
   const selectedTags = useMemo(() => {
     const map = new Map<string, Tag>()
@@ -75,7 +81,10 @@ const AnswerScreen = ({
 
   const handleSubmit = async () => {
     if (isSubmitting || isNavigating || isDeadlinePassed) return
-
+    if (isNameRequired && !trimmedName) {
+      setSubmitError("名前を入力してください")
+      return
+    }
     const guestId = getOrCreateGuestId()
 
     setIsSubmitting(true)
@@ -85,7 +94,7 @@ const AnswerScreen = ({
       await submitResponse(invitation.invite_token, {
         invitationId: invitation.id,
         guestId,
-        name: response.name,
+        name: response.name ?? "" ,
         availability: response.availability,
         selectedTags,
         comment: response.comment,
@@ -101,20 +110,27 @@ const AnswerScreen = ({
   }
 
   return (
-    <div>
+    <div className="space-y-4 rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
       {/* name */}
-      <Input
-        className="w-full outline-none"
-        placeholder={anonymousResponseEnabled ? "匿名設定されています" : "名前"}
-        value={response.name}
-        disabled={anonymousResponseEnabled}
-        onChange={(e) =>
-          setResponse((prev) => ({
-            ...prev,
-            name: e.target.value
-          }))
-        }
-      />
+      <div className="space-y-2">
+        <label htmlFor="answer-name" className="text-sm text-gray-700">
+          名前
+          {isNameRequired && <span className="ml-1 text-red-500">*</span>}
+        </label>
+        <Input
+          id="answer-name"
+          className="h-11 w-full border-gray-300 bg-white outline-none"
+          placeholder={anonymousResponseEnabled ? "匿名設定されています" : "例: 太郎"}
+          value={response.name ?? ""}
+          disabled={anonymousResponseEnabled}
+          onChange={(e) =>
+            setResponse((prev) => ({
+              ...prev,
+              name: e.target.value
+            }))
+          }
+        />
+      </div>
       
       <AnswerTile
         candidates={invitation.date_candidates}
@@ -128,20 +144,30 @@ const AnswerScreen = ({
       />
       
       {/* comment */}
-      <Textarea
-        className="w-full text-sm border rounded-lg p-3 resize-none"
-        placeholder={allowComments ? "コメント" : "コメントは許可されていません"}
-        rows={3}
-        value={response.comment ?? ""}
-        disabled={!allowComments}
-        onChange={(e) =>
-          setResponse((prev) => ({
-            ...prev,
-            comment: e.target.value,
-          }))
-        }
-      />
-      <Button onClick={handleSubmit} disabled={isSubmitting || isNavigating || isDeadlinePassed}>
+      <div className="space-y-2">
+        <label htmlFor="answer-comment" className="text-sm text-gray-700">
+          コメント
+        </label>
+        <Textarea
+          id="answer-comment"
+          className="w-full resize-none rounded-lg border border-gray-300 bg-white p-3 text-sm"
+          placeholder={allowComments ? "補足があれば入力してください" : "コメントは許可されていません"}
+          rows={3}
+          value={response.comment ?? ""}
+          disabled={!allowComments}
+          onChange={(e) =>
+            setResponse((prev) => ({
+              ...prev,
+              comment: e.target.value,
+            }))
+          }
+        />
+      </div>
+      <Button
+        className="h-11 w-full"
+        onClick={handleSubmit}
+        disabled={isSubmitting || isNavigating || isDeadlinePassed || (isNameRequired && !trimmedName)}
+      >
         {isSubmitting ? (
           <span className="inline-flex items-center gap-2">
             <Spinner className="size-4" />

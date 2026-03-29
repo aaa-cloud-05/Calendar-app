@@ -46,9 +46,6 @@ const Page = () => {
     <div className="min-h-screen bg-liner-to-b from-zinc-50 via-white to-zinc-50 text-zinc-900">
       <main className="mx-auto max-w-3xl px-5 py-10 space-y-8">
         <section className="space-y-4">
-          <p className="text-xs font-medium tracking-[0.18em] text-zinc-500 uppercase">
-            Quick Plan
-          </p>
           <h1 className="text-3xl md:text-4xl font-semibold leading-tight">
             シンプルだけど、高機能。
           </h1>

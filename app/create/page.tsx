@@ -15,6 +15,7 @@ import { useRouter } from "next/navigation"
 import { Card } from "@/components/ui/card"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Spinner } from "@/components/ui/spinner"
+import { toast } from "sonner"
 
 const CreateInvitationPage = () => {
   const router = useRouter()
@@ -44,6 +45,7 @@ const CreateInvitationPage = () => {
 
     setIsCreating(true)
     setCreateError("")
+    const loadingToastId = toast.loading("招待を作成しています...")
 
     const sortedDateCandidates = [...draft.dateCandidates].sort(
       (a, b) => a.date.getTime() - b.date.getTime()
@@ -67,6 +69,10 @@ const CreateInvitationPage = () => {
       })
       
       if (!res.ok) {
+        toast.error("招待の作成に失敗しました。", {
+          id: loadingToastId,
+          description: "時間をおいて再度お試しください。",
+        })
         setCreateError("作成に失敗しました。時間をおいて再度お試しください。")
         return
       }
@@ -74,13 +80,25 @@ const CreateInvitationPage = () => {
       const data = await res.json()
 
       if (!data.inviteToken) {
+        toast.error("招待の作成に失敗しました。", {
+          id: loadingToastId,
+          description: "共有用の情報を取得できませんでした。",
+        })
         setCreateError("作成に失敗しました。時間をおいて再度お試しください。")
         return
       }
 
+      toast.success("招待を作成しました。", {
+        id: loadingToastId,
+        description: "リンクを共有して友達を招待しよう。",
+      })
       setIsNavigating(true)
       router.push(`/invitation/${data.inviteToken}?share=1`)
     } catch {
+      toast.error("招待の作成に失敗しました。", {
+        id: loadingToastId,
+        description: "通信状況を確認して、もう一度お試しください。",
+      })
       setCreateError("作成に失敗しました。時間をおいて再度お試しください。")
     } finally {
       setIsCreating(false)
@@ -359,11 +377,6 @@ const CreateInvitationPage = () => {
           {createError && (
             <p className="text-xs text-center text-red-500 mt-3">{createError}</p>
           )}
-          <p className="text-xs text-center text-gray-500 mt-3">
-            {!draft.title || draft.dateCandidates.length === 0
-              ? "必須項目を入力してください"
-              : "作成準備ができました"}
-          </p>
         </div>
       </div>
 

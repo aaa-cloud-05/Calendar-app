@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { Toaster } from "@/components/ui/sonner";
 import Link from "next/link";
 import "./globals.css";
 
@@ -32,6 +33,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen`}
       >
         <div className="flex-1">{children}</div>
+        <Toaster richColors position="top-center" />
         <footer className="border-t border-zinc-200 bg-white py-5">
           <nav
             className="mx-auto max-w-3xl px-5 flex flex-wrap justify-center gap-x-6 gap-y-2 text-xs text-zinc-500"

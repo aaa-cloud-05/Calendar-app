@@ -9,6 +9,7 @@ import { DateCandidate, ResponseDraft, Tag } from '@/app/types/type'
 import { submitResponse } from '@/app/answer/[token]/action'
 import { Spinner } from './ui/spinner'
 import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 
 type InvitationPayload = {
   id: string
@@ -82,6 +83,7 @@ const AnswerScreen = ({
   const handleSubmit = async () => {
     if (isSubmitting || isNavigating || isDeadlinePassed) return
     if (isNameRequired && !trimmedName) {
+      toast.warning("名前を入力してください")
       setSubmitError("名前を入力してください")
       return
     }
@@ -89,6 +91,7 @@ const AnswerScreen = ({
 
     setIsSubmitting(true)
     setSubmitError("")
+    const loadingToastId = toast.loading("回答を送信しています...")
 
     try {
       await submitResponse(invitation.invite_token, {
@@ -99,10 +102,18 @@ const AnswerScreen = ({
         selectedTags,
         comment: response.comment,
       })
+      toast.success("回答を送信しました。", {
+        id: loadingToastId,
+        description: "みんなの回答を確認しよう。",
+      })
       setIsNavigating(true)
       router.push(`/invitation/${invitation.invite_token}`)
     } catch (e) {
       console.error(e)
+      toast.error("回答の送信に失敗しました。", {
+        id: loadingToastId,
+        description: "時間をおいて再度お試しください。",
+      })
       setSubmitError("送信に失敗しました。時間をおいて再度お試しください。")
     } finally {
       setIsSubmitting(false)

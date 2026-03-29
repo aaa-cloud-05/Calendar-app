@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Check, Copy } from "lucide-react"
 import { Spinner } from "@/components/ui/spinner"
 import { Skeleton } from "./ui/skeleton"
+import { toast } from "sonner"
 
 type ShareCardProps = {
   token: string
@@ -34,14 +35,21 @@ const ShareCard = ({ token, answerUrl }: ShareCardProps) => {
     try {
       await navigator.clipboard.writeText(value)
       setCopied(true)
+      toast.success("Invitation IDをコピーしました。")
       window.setTimeout(() => setCopied(false), 2000)
     } catch {
+      toast.error("コピーに失敗しました。", {
+        description: "もう一度お試しください。",
+      })
       setCopyError("コピーに失敗しました。もう一度お試しください。")
     }
   }
 
   const shareWithWebApi = async () => {
     if (typeof navigator === "undefined" || !navigator.share) {
+      toast.info("この端末では共有メニューを開けません。", {
+        description: "Invitation IDのコピーをご利用ください。",
+      })
       return
     }
 
@@ -52,6 +60,11 @@ const ShareCard = ({ token, answerUrl }: ShareCardProps) => {
         title: "招待カードを共有",
         text: `Invitation ID: ${token}`,
         url: fullAnswerUrl,
+      })
+      toast.success("共有メニューを開きました。")
+    } catch {
+      toast.error("共有に失敗しました。", {
+        description: "コピーして共有する方法もお試しください。",
       })
     } finally {
       setIsSharing(false)

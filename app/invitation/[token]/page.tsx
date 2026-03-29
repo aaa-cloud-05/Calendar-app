@@ -34,6 +34,13 @@ function isAvailabilityArray(value: unknown): value is AvailabilityItem[] {
   return Array.isArray(value) && value.every(isAvailabilityItem)
 }
 
+function formatCandidateTimeRange(startTime?: string, endTime?: string) {
+  if (startTime && endTime) return `${startTime} - ${endTime}`
+  if (startTime) return `${startTime}-`
+  if (endTime) return `-${endTime}`
+  return undefined
+}
+
 export default async function Page({
   params,
   searchParams,
@@ -113,10 +120,9 @@ export default async function Page({
         month: "numeric",
         day: "numeric",
       }),
-      timeLabel:
-        candidate.startTime && candidate.endTime
-          ? `${candidate.startTime} - ${candidate.endTime}`
-          : candidate.startTime || candidate.endTime || undefined,
+      startTime: candidate.startTime,
+      endTime: candidate.endTime,
+      timeLabel: formatCandidateTimeRange(candidate.startTime, candidate.endTime),
       comment: candidate.comment,
       tags: Array.from(tagMap.entries())
         .map(([label, count]) => ({ label, count }))
@@ -127,9 +133,11 @@ export default async function Page({
   })
 
   const rankingData = candidateSummaries
-    .map(({ date, timeLabel, yes, maybe, no }) => ({
+    .map(({ date, timeLabel, startTime, endTime, yes, maybe, no }) => ({
       date,
       timeLabel,
+      startTime,
+      endTime,
       yes,
       maybe,
       no,

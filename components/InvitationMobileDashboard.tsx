@@ -26,6 +26,8 @@ type RankingItem = {
   no: number
   score: number
   timeLabel?: string
+  startTime?: string
+  endTime?: string
 }
 
 type CandidateResponder = {
@@ -40,6 +42,8 @@ type SummaryItem = {
   candidateId: string
   dateLabel: string
   timeLabel?: string
+  startTime?: string
+  endTime?: string
   comment?: string
   yes: number
   maybe: number
@@ -76,7 +80,9 @@ function formatBudget(budget?: number) {
 
 function formatTimeRange(startTime?: string, endTime?: string) {
   if (startTime && endTime) return `${startTime} - ${endTime}`
-  return startTime || endTime || "未設定"
+  if (startTime) return `${startTime}-`
+  if (endTime) return `-${endTime}`
+  return "未設定"
 }
 
 function getRemainingDays(deadline?: string) {
@@ -201,7 +207,11 @@ export default function InvitationMobileDashboard({
                     <p className="text-xs opacity-90">Best Date</p>
                   </div>
                   <p className="text-lg font-semibold">{topCandidate?.date || "候補日未設定"}</p>
-                  <p className="text-xs opacity-90">{topCandidate?.timeLabel || formatTimeRange(invitation.startTime, invitation.endTime)}</p>
+                  <p className="text-xs opacity-90">
+                    {topCandidate
+                      ? formatTimeRange(topCandidate.startTime, topCandidate.endTime)
+                      : formatTimeRange(invitation.startTime, invitation.endTime)}
+                  </p>
                   <div className="mt-2 flex items-center gap-3 text-xs opacity-90">
                     <span>Yes {topCandidate?.yes ?? 0}</span>
                     <span>Maybe {topCandidate?.maybe ?? 0}</span>

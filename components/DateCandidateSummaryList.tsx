@@ -15,6 +15,8 @@ type SummaryItem = {
   candidateId: string
   dateLabel: string
   timeLabel?: string
+  startTime?: string
+  endTime?: string
   comment?: string
   yes: number
   maybe: number
@@ -61,6 +63,13 @@ function getStatusMeta(status: Responder["status"]) {
   return STATUS_META.find((item) => item.key === status) ?? STATUS_META[1]
 }
 
+function formatTimeRange(startTime?: string, endTime?: string) {
+  if (startTime && endTime) return `${startTime} - ${endTime}`
+  if (startTime) return `${startTime}-`
+  if (endTime) return `-${endTime}`
+  return undefined
+}
+
 export default function DateCandidateSummaryList({ items }: Props) {
   if (items.length === 0) {
     return null
@@ -89,11 +98,11 @@ export default function DateCandidateSummaryList({ items }: Props) {
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <CalendarDays className="size-4" />
                     <span>{item.dateLabel}</span>
-                    {item.timeLabel ? (
+                    {formatTimeRange(item.startTime, item.endTime) || item.timeLabel ? (
                       <>
                         <span className="text-border">•</span>
                         <Clock3 className="size-4" />
-                        <span>{item.timeLabel}</span>
+                        <span>{formatTimeRange(item.startTime, item.endTime) || item.timeLabel}</span>
                       </>
                     ) : null}
                   </div>

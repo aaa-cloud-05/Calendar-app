@@ -14,6 +14,8 @@ type InvitationPayload = {
   id: string
   invite_token: string
   date_candidates: DateCandidate[]
+  start_time?: string | null
+  end_time?: string | null
   tags?: Tag[]
   settings?: {
     anonymousResponse?: boolean
@@ -117,8 +119,12 @@ const AnswerScreen = ({
       <AnswerTile
         candidates={invitation.date_candidates}
         tags={TAG}
-        response={response}  
+        response={response}
         setResponse={setResponse}
+        eventTimeFallback={{
+          start: invitation.start_time,
+          end: invitation.end_time,
+        }}
       />
       
       {/* comment */}

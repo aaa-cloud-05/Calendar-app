@@ -5,11 +5,36 @@ import { Tabs, TabsList, TabsTrigger } from "./ui/tabs"
 import { Circle, Triangle, X } from "lucide-react"
 import { DateCandidate, ResponseDraft, AvailabilityStatus, Tag } from "@/app/types/type"
 
+function formatTimePair(
+  startRaw: string | null | undefined,
+  endRaw: string | null | undefined
+): string | null {
+  const start = startRaw?.trim()
+  const end = endRaw?.trim()
+  if (start && end) return `${start} - ${end}`
+  if (start) return `${start} -`
+  if (end) return `- ${end}`
+  return null
+}
+
+function getCandidateTimeRange(
+  candidate: DateCandidate & { start_time?: string; end_time?: string },
+  eventFallback?: { start?: string | null; end?: string | null }
+) {
+  const direct = formatTimePair(
+    candidate.startTime ?? candidate.start_time,
+    candidate.endTime ?? candidate.end_time
+  )
+  if (direct) return direct
+  return formatTimePair(eventFallback?.start, eventFallback?.end)
+}
+
 type Props = {
   candidates: DateCandidate[]
   tags: Tag[]
   response: ResponseDraft
   setResponse: React.Dispatch<React.SetStateAction<ResponseDraft>>
+  eventTimeFallback?: { start?: string | null; end?: string | null }
 }
 
 export default function AnswerTile({
@@ -17,6 +42,7 @@ export default function AnswerTile({
   tags,
   response,
   setResponse,
+  eventTimeFallback,
 }: Props) {
 
   function setStatus(candidateId: string, status: AvailabilityStatus) {
@@ -101,13 +127,34 @@ export default function AnswerTile({
     <div className="space-y-3">
       {candidates.map(candidate => {
         const status = getStatus(candidate.id)
+        const d = new Date(candidate.date)
+        const dateLabel = d.toLocaleDateString("ja-JP", {
+          year: "numeric",
+          month: "numeric",
+          day: "numeric",
+          weekday: "short",
+        })
+        const timeLabel = getCandidateTimeRange(
+          candidate as DateCandidate & { start_time?: string; end_time?: string },
+          eventTimeFallback
+        )
+        const candidateComment = candidate.comment?.trim()
 
         return (
           <Card key={candidate.id} className="p-3 space-y-2">
 
-            {/* date */}
-            <div className="text-sm font-medium">
-              {new Date(candidate.date).toLocaleDateString()}
+            <div className="space-y-1">
+              <div className="text-sm font-medium">{dateLabel}</div>
+              {timeLabel && (
+                <div className="text-xs text-muted-foreground tabular-nums">
+                  {timeLabel}
+                </div>
+              )}
+              {candidateComment && (
+                <p className="text-xs text-zinc-600 leading-relaxed whitespace-pre-wrap break-words border-l-2 border-zinc-200 pl-2">
+                  {candidateComment}
+                </p>
+              )}
             </div>
 
             {/* tabs */}

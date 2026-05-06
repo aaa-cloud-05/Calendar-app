@@ -141,10 +141,6 @@ export default function InvitationMobileDashboard({
       <TabsContent value="overview" className="mt-0 space-y-0">
         <div className="bg-white">
           <div className="px-5 pb-4 pt-6">
-            <div className="mb-4 flex size-16 items-center justify-center rounded-2xl shadow-sm">
-              <span className="text-3xl">☺</span>
-            </div>
-
             <div className="mb-2 flex items-center justify-between gap-2">
               <h1 className="text-2xl font-semibold leading-tight">{invitation.title || "イベントタイトル未設定"}</h1>
               <Badge variant="outline" className="shrink-0">
